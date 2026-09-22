@@ -12,6 +12,7 @@ else:
 
 class Settings(BaseSettings):
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    GEMINI_BACKUP_KEYS: str = os.getenv("GEMINI_BACKUP_KEYS", "")
     TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
     
     # Model preferences

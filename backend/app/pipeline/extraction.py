@@ -90,7 +90,9 @@ Provide JSON output matching the ClaimExtractionResponse schema with:
         from google.genai import types
 
         client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
+        from app.pipeline.verification import call_gemini_with_backoff
+        response = call_gemini_with_backoff(
+            client=client,
             model=settings.GEMINI_MODEL,
             contents=prompt,
             config=types.GenerateContentConfig(
@@ -98,7 +100,8 @@ Provide JSON output matching the ClaimExtractionResponse schema with:
                 response_mime_type="application/json",
                 response_schema=ClaimExtractionResponse,
                 temperature=0.0,
-            )
+            ),
+            max_retries=3
         )
         
         parsed = json.loads(response.text)

@@ -180,9 +180,28 @@ def run_nli_signal(premise: str, hypothesis: str) -> Tuple[str, float]:
     else:
         return "Not Enough Info", 0.70
 
+def get_backup_keys() -> List[str]:
+    raw = getattr(settings, "GEMINI_BACKUP_KEYS", "") or ""
+    return [k.strip() for k in raw.split(",") if k.strip()]
+
 def call_gemini_with_backoff(client, model: str, contents: Any, config: Any, max_retries: int = 3):
-    """Executes a Gemini API call with exponential backoff on 429 rate-limits and fallback models."""
+    """
+    Executes a Gemini API call with:
+    1. Candidate models (e.g. gemini-3.1-flash-lite, fallback models)
+    2. Automatic backup key failover (switches to verified backup keys on quota exhaustion)
+    3. Exponential backoff on rate-limits
+    """
     import time
+    from google import genai
+
+    candidate_clients = [client]
+    for b_key in get_backup_keys():
+        if b_key and b_key != getattr(settings, "GEMINI_API_KEY", ""):
+            try:
+                candidate_clients.append(genai.Client(api_key=b_key))
+            except Exception:
+                pass
+
     candidate_models = [model]
     if hasattr(settings, "FALLBACK_GEMINI_MODEL") and settings.FALLBACK_GEMINI_MODEL and settings.FALLBACK_GEMINI_MODEL != model:
         candidate_models.append(settings.FALLBACK_GEMINI_MODEL)
@@ -190,29 +209,26 @@ def call_gemini_with_backoff(client, model: str, contents: Any, config: Any, max
         candidate_models.append("gemini-3.1-flash-lite")
 
     last_err = None
-    for target_model in candidate_models:
-        for attempt in range(max_retries):
-            try:
-                return client.models.generate_content(
-                    model=target_model,
-                    contents=contents,
-                    config=config
-                )
-            except Exception as e:
-                err_str = str(e)
-                last_err = e
-                if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-                    delay = 5 * (attempt + 1)
-                    retry_match = re.search(r'retryDelay[\'"]?\s*:\s*[\'"]?(\d+)s', err_str)
-                    if retry_match:
-                        delay = min(30, int(retry_match.group(1)) + 1)
-                    logger.warning(f"Gemini 429 rate-limit hit on {target_model}. Backing off for {delay}s (Attempt {attempt + 1}/{max_retries})...")
-                    time.sleep(delay)
-                elif "503" in err_str or "UNAVAILABLE" in err_str or "404" in err_str:
-                    logger.warning(f"Model {target_model} unavailable ({err_str[:80]}). Switching candidate...")
-                    break
-                else:
-                    raise e
+    for cur_client in candidate_clients:
+        for target_model in candidate_models:
+            for attempt in range(max_retries):
+                try:
+                    return cur_client.models.generate_content(
+                        model=target_model,
+                        contents=contents,
+                        config=config
+                    )
+                except Exception as e:
+                    err_str = str(e)
+                    last_err = e
+                    if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                        logger.warning(f"Gemini quota hit on key/model ({target_model}). Rolling over to backup client...")
+                        break  # Immediately try backup client
+                    elif "503" in err_str or "UNAVAILABLE" in err_str or "404" in err_str:
+                        logger.warning(f"Model {target_model} unavailable ({err_str[:80]}). Switching candidate...")
+                        break
+                    else:
+                        raise e
     if last_err:
         raise last_err
 
