@@ -9,19 +9,23 @@ from app.config import settings
 logger = logging.getLogger("meiporul.verification")
 
 # Global NLI model holder for warm-loading
-_NLI_PIPELINE = None
+_NLI_TOKENIZER = None
+_NLI_MODEL = None
 
 def init_nli_model():
-    """Warm-load NLI model at startup if transformers & torch are installed."""
-    global _NLI_PIPELINE
+    """Warm-load NLI model at startup using HuggingFace cross-encoder/nli-deberta-v3-small."""
+    global _NLI_TOKENIZER, _NLI_MODEL
     try:
-        from transformers import pipeline
-        logger.info(f"Warm-loading NLI model: {settings.NLI_MODEL_NAME}...")
-        _NLI_PIPELINE = pipeline("text-classification", model=settings.NLI_MODEL_NAME)
-        logger.info("NLI model loaded successfully.")
+        from transformers import AutoTokenizer, AutoModelForSequenceClassification
+        logger.info(f"Warm-loading NLI cross-encoder: {settings.NLI_MODEL_NAME}...")
+        _NLI_TOKENIZER = AutoTokenizer.from_pretrained(settings.NLI_MODEL_NAME)
+        _NLI_MODEL = AutoModelForSequenceClassification.from_pretrained(settings.NLI_MODEL_NAME)
+        _NLI_MODEL.eval()
+        logger.info(f"NLI model loaded successfully with labels: {_NLI_MODEL.config.id2label}")
     except Exception as e:
         logger.warning(f"Could not load HuggingFace NLI model ({e}). Using heuristic NLI cross-check.")
-        _NLI_PIPELINE = None
+        _NLI_TOKENIZER = None
+        _NLI_MODEL = None
 
 class LLMVerificationResult(BaseModel):
     verdict: str = Field(description="Supported, Contradicted, or Not Enough Info")
@@ -73,16 +77,21 @@ def verify_numeric_claim(claim: str, passage: str) -> Optional[Tuple[str, float]
 
 def run_nli_signal(premise: str, hypothesis: str) -> Tuple[str, float]:
     """
-    Signal B: Natural Language Inference (cross-encoder or local classifier).
+    Signal B: Natural Language Inference cross-encoder check using DeBERTa.
     Returns (verdict, score).
     """
-    global _NLI_PIPELINE
-    if _NLI_PIPELINE is not None:
+    global _NLI_TOKENIZER, _NLI_MODEL
+    if _NLI_TOKENIZER is not None and _NLI_MODEL is not None:
         try:
-            # cross-encoder formats or classification
-            res = _NLI_PIPELINE(f"{premise} [SEP] {hypothesis}")
-            label = res[0]["label"].lower()
-            score = float(res[0]["score"])
+            import torch
+            inputs = _NLI_TOKENIZER(premise, hypothesis, return_tensors="pt", truncation=True, max_length=512)
+            with torch.no_grad():
+                logits = _NLI_MODEL(**inputs).logits
+                probs = torch.softmax(logits, dim=-1)[0]
+                pred_idx = int(torch.argmax(probs).item())
+                label = _NLI_MODEL.config.id2label.get(pred_idx, "").lower()
+                score = float(probs[pred_idx].item())
+
             if "entail" in label:
                 return "Supported", score
             elif "contra" in label:
@@ -90,7 +99,7 @@ def run_nli_signal(premise: str, hypothesis: str) -> Tuple[str, float]:
             else:
                 return "Not Enough Info", score
         except Exception as e:
-            logger.warning(f"Error during NLI pipeline inference: {e}")
+            logger.warning(f"Error during NLI model inference: {e}")
 
     # Fallback heuristic NLI check
     # Check negation patterns and key entity alignment
