@@ -180,3 +180,14 @@ def retrieve_evidence(claim_text: str, is_numeric: bool = False) -> List[Dict[st
 
     _RETRIEVAL_CACHE[norm_key] = top_passages
     return top_passages
+
+def retrieve_evidence_parallel(claim_items: List[Dict[str, Any]], max_workers: int = 6) -> List[List[Dict[str, Any]]]:
+    """Retrieve evidence for multiple claims concurrently using a thread pool."""
+    from concurrent.futures import ThreadPoolExecutor
+    
+    def _fetch_one(item):
+        return retrieve_evidence(item["claim_text"], is_numeric=item.get("is_numeric", False))
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        return list(executor.map(_fetch_one, claim_items))
+

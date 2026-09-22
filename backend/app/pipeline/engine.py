@@ -4,8 +4,8 @@ from typing import Dict, Any, List
 
 from app.models import VerifyRequest, VerifyResponse, ClaimResult, SummaryMetrics
 from app.pipeline.extraction import extract_claims
-from app.pipeline.retrieval import retrieve_evidence
-from app.pipeline.verification import verify_single_claim, check_pairwise_consistency
+from app.pipeline.retrieval import retrieve_evidence, retrieve_evidence_parallel
+from app.pipeline.verification import verify_single_claim, verify_claims_batch, check_pairwise_consistency
 from app.pipeline.rewrite import generate_grounded_rewrite, reverify_rewrite
 from app.pipeline.annotator import compute_summary_metrics, generate_annotated_answer
 
@@ -34,32 +34,33 @@ def run_verification_pipeline(request: VerifyRequest) -> VerifyResponse:
 
     verified_claims: List[Dict[str, Any]] = []
 
-    # STAGES 2 & 3: Retrieval & Dual-Signal Verification
-    for item in extracted:
-        claim_text = item["claim_text"]
-        is_numeric = item.get("is_numeric", False)
+    # STAGE 2: Parallel Multi-source Retrieval
+    t2 = time.time()
+    passages_per_claim = retrieve_evidence_parallel(extracted, max_workers=6)
+    logger.info(f"Stage 2 retrieved evidence for {len(extracted)} claims in {time.time() - t2:.2f}s")
 
-        # Stage 2: Multi-source retrieval
-        passages = retrieve_evidence(claim_text, is_numeric=is_numeric)
-
-        # Stage 3: Dual-signal verification + numeric check
-        v_res = verify_single_claim(item, passages)
-        verified_claims.append(v_res)
+    # STAGE 3: Batched Verification (1-2 Gemini calls + local DeBERTa)
+    t3 = time.time()
+    verified_claims = verify_claims_batch(extracted, passages_per_claim)
+    logger.info(f"Stage 3 verified {len(verified_claims)} claims in {time.time() - t3:.2f}s")
 
     # Self-consistency check across claims
     verified_claims = check_pairwise_consistency(verified_claims)
 
     # STAGES 4 & 5: Rewrite & Re-verification Loop (only fires on Contradicted claims)
-    for claim in verified_claims:
+    for idx, claim in enumerate(verified_claims):
         if claim["verdict"] == "Contradicted":
+            claim_passages = passages_per_claim[idx] if idx < len(passages_per_claim) else []
             candidate_rewrite = generate_grounded_rewrite(
                 claim=claim["claim_text"],
                 evidence_snippet=claim["evidence_snippet"],
-                evidence_source=claim["evidence_source"]
+                evidence_source=claim["evidence_source"],
+                all_passages=claim_passages
             )
             if candidate_rewrite:
                 # Stage 5: Re-verify rewrite against evidence
-                if reverify_rewrite(candidate_rewrite, claim["evidence_snippet"]):
+                combined_evidence = claim["evidence_snippet"] + " " + " ".join([p["text"] for p in claim_passages])
+                if reverify_rewrite(candidate_rewrite, combined_evidence):
                     claim["rewritten_claim"] = candidate_rewrite
                 else:
                     logger.warning(f"Rewrite failed re-verification: {candidate_rewrite}")

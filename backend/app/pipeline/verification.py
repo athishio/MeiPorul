@@ -54,6 +54,7 @@ def verify_numeric_claim(claim: str, passage: str) -> Optional[Tuple[str, float]
     """
     Direct numeric comparison: if a specific year/number in the claim is contradicted
     by the evidence passage for the same context, return ('Contradicted', confidence).
+    Absence of a match does NOT indicate contradiction; it returns None (deferring to Signal A/B).
     """
     claim_nums = extract_numeric_entities(claim)
     passage_nums = extract_numeric_entities(passage)
@@ -61,17 +62,37 @@ def verify_numeric_claim(claim: str, passage: str) -> Optional[Tuple[str, float]
     if not claim_nums or not passage_nums:
         return None
 
-    # Check for direct year mismatch
+    # Check for direct year comparison
     claim_years = [n for n in claim_nums if re.match(r'^(1[89]\d\d|20\d\d)$', n)]
     passage_years = [n for n in passage_nums if re.match(r'^(1[89]\d\d|20\d\d)$', n)]
 
     if claim_years and passage_years:
-        # If the claim mentions a year not present in the passage, but passage has another year
-        if not set(claim_years).intersection(set(passage_years)):
-            # Potential contradiction in dates
-            return ("Contradicted", 0.92)
-        elif set(claim_years).issubset(set(passage_years)):
-            return ("Supported", 0.90)
+        # Check non-numeric semantic alignment to ensure they refer to the SAME specific event/topic
+        claim_words = set(re.findall(r'\b[a-zA-Z]{4,}\b', claim.lower()))
+        passage_words = set(re.findall(r'\b[a-zA-Z]{4,}\b', passage.lower()))
+        stopwords = {"with", "that", "this", "from", "were", "been", "have", "first", "more", "most", "about", "which", "into"}
+        claim_content_words = claim_words - stopwords
+        overlap = len(claim_content_words & passage_words) / max(1, len(claim_content_words))
+
+        # Only evaluate numeric contradiction if the passage is genuinely discussing the exact same event (>60% content overlap)
+        if overlap >= 0.60:
+            if set(claim_years).issubset(set(passage_years)):
+                return ("Supported", 0.90)
+            elif not set(claim_years).intersection(set(passage_years)):
+                # High semantic overlap on the same subject, but explicit contradictory year
+                return ("Contradicted", 0.90)
+
+    # For percentages or quantities (e.g. 15% vs 0.38%), check if the exact property contradicts
+    claim_percents = [n for n in claim_nums if '%' in n or 'percent' in n.lower()]
+    passage_percents = [n for n in passage_nums if '%' in n or 'percent' in n.lower()]
+    if claim_percents and passage_percents:
+        claim_words = set(re.findall(r'\b[a-zA-Z]{4,}\b', claim.lower()))
+        passage_words = set(re.findall(r'\b[a-zA-Z]{4,}\b', passage.lower()))
+        stopwords = {"with", "that", "this", "from", "were", "been", "have", "first", "more", "most", "about"}
+        claim_content_words = claim_words - stopwords
+        overlap = len(claim_content_words & passage_words) / max(1, len(claim_content_words))
+        if overlap >= 0.65 and not set(claim_percents).intersection(set(passage_percents)):
+            return ("Contradicted", 0.88)
 
     return None
 
@@ -122,32 +143,40 @@ def run_nli_signal(premise: str, hypothesis: str) -> Tuple[str, float]:
         return "Not Enough Info", 0.70
 
 def call_gemini_with_backoff(client, model: str, contents: Any, config: Any, max_retries: int = 3):
-    """Executes a Gemini API call with exponential backoff on 429 rate-limits."""
+    """Executes a Gemini API call with exponential backoff on 429 rate-limits and fallback models."""
     import time
-    for attempt in range(max_retries):
-        try:
-            return client.models.generate_content(
-                model=model,
-                contents=contents,
-                config=config
-            )
-        except Exception as e:
-            err_str = str(e)
-            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-                delay = 10 * (attempt + 1)
-                retry_match = re.search(r'retryDelay[\'"]?\s*:\s*[\'"]?(\d+)s', err_str)
-                if retry_match:
-                    delay = int(retry_match.group(1)) + 1
-                logger.warning(f"Gemini 429 rate-limit hit. Backing off for {delay}s (Attempt {attempt + 1}/{max_retries})...")
-                time.sleep(delay)
-            else:
-                raise e
-    # Final attempt after retries
-    return client.models.generate_content(
-        model=model,
-        contents=contents,
-        config=config
-    )
+    candidate_models = [model]
+    if hasattr(settings, "FALLBACK_GEMINI_MODEL") and settings.FALLBACK_GEMINI_MODEL and settings.FALLBACK_GEMINI_MODEL != model:
+        candidate_models.append(settings.FALLBACK_GEMINI_MODEL)
+    if "gemini-3.1-flash-lite" not in candidate_models:
+        candidate_models.append("gemini-3.1-flash-lite")
+
+    last_err = None
+    for target_model in candidate_models:
+        for attempt in range(max_retries):
+            try:
+                return client.models.generate_content(
+                    model=target_model,
+                    contents=contents,
+                    config=config
+                )
+            except Exception as e:
+                err_str = str(e)
+                last_err = e
+                if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                    delay = 5 * (attempt + 1)
+                    retry_match = re.search(r'retryDelay[\'"]?\s*:\s*[\'"]?(\d+)s', err_str)
+                    if retry_match:
+                        delay = min(30, int(retry_match.group(1)) + 1)
+                    logger.warning(f"Gemini 429 rate-limit hit on {target_model}. Backing off for {delay}s (Attempt {attempt + 1}/{max_retries})...")
+                    time.sleep(delay)
+                elif "503" in err_str or "UNAVAILABLE" in err_str or "404" in err_str:
+                    logger.warning(f"Model {target_model} unavailable ({err_str[:80]}). Switching candidate...")
+                    break
+                else:
+                    raise e
+    if last_err:
+        raise last_err
 
 def run_llm_signal(claim: str, passages: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
@@ -218,10 +247,106 @@ Provide JSON output with:
             "evidence_quote": passages[0]["text"][:200] if passages else ""
         }
 
-def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any]]) -> Dict[str, Any]:
+def run_nli_signal_on_passages(passages: List[Dict[str, Any]], hypothesis: str) -> Tuple[str, float, Dict[str, Any]]:
+    """
+    Evaluates all retrieved passages for a claim against the hypothesis using DeBERTa.
+    Returns (verdict, score, most_relevant_passage).
+    Prioritizes strong Supported or Contradicted verdicts over Not Enough Info.
+    """
+    if not passages:
+        return "Not Enough Info", 0.50, {}
+        
+    best_verdict = "Not Enough Info"
+    best_score = 0.50
+    best_passage = passages[0]
+
+    for p in passages:
+        v, s = run_nli_signal(p["text"], hypothesis)
+        if v in ("Supported", "Contradicted"):
+            if best_verdict == "Not Enough Info" or s > best_score:
+                best_verdict = v
+                best_score = s
+                best_passage = p
+        elif best_verdict == "Not Enough Info" and s > best_score:
+            best_score = s
+            best_passage = p
+
+    return best_verdict, best_score, best_passage
+
+class ClaimVerificationItem(BaseModel):
+    claim_id: int
+    verdict: str = Field(description="Supported, Contradicted, or Not Enough Info")
+    reasoning: str = Field(description="Brief explanation of the decision")
+    evidence_quote: str = Field(description="Exact snippet from the passages that supports or contradicts the claim")
+
+class BatchVerificationResponse(BaseModel):
+    results: List[ClaimVerificationItem]
+
+def run_llm_signal_batch(claims_with_passages: List[Dict[str, Any]]) -> Dict[int, Dict[str, Any]]:
+    """
+    Batches verification of multiple claims to Gemini in 1-2 API calls.
+    Returns mapping from claim_id -> {verdict, reasoning, evidence_quote, is_available}.
+    """
+    results_map: Dict[int, Dict[str, Any]] = {}
+    if not claims_with_passages:
+        return results_map
+
+    api_key = settings.GEMINI_API_KEY
+    if not api_key:
+        return results_map
+
+    from google import genai
+    from google.genai import types
+
+    batch_size = 10
+    client = genai.Client(api_key=api_key)
+
+    for i in range(0, len(claims_with_passages), batch_size):
+        batch = claims_with_passages[i:i + batch_size]
+        batch_prompt_parts = ["Verify each claim based strictly on its associated evidence passages:\n"]
+        for item in batch:
+            cid = item["claim_id"]
+            ctext = item["claim_text"]
+            passages = item["passages"]
+            p_text = "\n".join([f"  [Passage {j+1}] ({p['source']}): {p['text']}" for j, p in enumerate(passages)])
+            batch_prompt_parts.append(f"[Claim ID {cid}]\nClaim: \"{ctext}\"\nPassages:\n{p_text}\n")
+
+        prompt = "\n".join(batch_prompt_parts) + "\nProvide JSON output matching BatchVerificationResponse schema."
+
+        try:
+            response = call_gemini_with_backoff(
+                client=client,
+                model=settings.GEMINI_MODEL,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=VERIFICATION_SYSTEM_PROMPT,
+                    response_mime_type="application/json",
+                    response_schema=BatchVerificationResponse,
+                    temperature=0.0
+                ),
+                max_retries=3
+            )
+            data = json.loads(response.text)
+            for r in data.get("results", []):
+                results_map[r["claim_id"]] = {
+                    "verdict": r["verdict"],
+                    "reasoning": r.get("reasoning", ""),
+                    "evidence_quote": r.get("evidence_quote", ""),
+                    "is_available": True
+                }
+        except Exception as e:
+            logger.error(f"Batch verification call failed: {e}")
+            for item in batch:
+                cid = item["claim_id"]
+                if cid not in results_map:
+                    results_map[cid] = {"verdict": None, "is_available": False, "reasoning": str(e), "evidence_quote": ""}
+
+    return results_map
+
+def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any]], precomputed_signal_a: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
     Combines Signal A (LLM) and Signal B (NLI) with numeric rules.
-    Fixes Bug 1 (Arbitration fallback to Signal B) and Bug 3 (Source sync).
+    Fixes Bug 1 (Arbitration fallback to Signal B), Bug 3 (Source sync), and Issue 1 (No false positive numeric overrides).
     """
     claim_text = claim_item["claim_text"]
     is_numeric = claim_item.get("is_numeric", False)
@@ -237,10 +362,11 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
             "arbitration_mode": "No Evidence"
         }
 
-    best_passage = passages[0]
+    # 1. Evaluate Signal B on all passages to find the most informative passage
+    verdict_b, nli_score, best_passage = run_nli_signal_on_passages(passages, claim_text)
     avg_similarity = sum(p.get("similarity_score", 0.0) for p in passages) / len(passages)
 
-    # 1. Numeric Check (if applicable)
+    # 2. Strict Numeric Check (semantic overlap >= 60%)
     numeric_override = None
     if is_numeric:
         for p in passages:
@@ -249,30 +375,32 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
                 numeric_override = (check[0], check[1], p)
                 break
 
-    # 2. Signal A: LLM verification
-    signal_a = run_llm_signal(claim_text, passages)
+    # 3. Signal A: Use precomputed batch result or execute single call
+    if precomputed_signal_a is not None:
+        signal_a = precomputed_signal_a
+    else:
+        signal_a = run_llm_signal(claim_text, passages)
+
     signal_a_available = signal_a.get("is_available", False)
     verdict_a = signal_a.get("verdict")
     evidence_quote = signal_a.get("evidence_quote") or best_passage["text"][:250]
 
-    # Bug 3 Fix: Synchronize evidence_source with the exact passage containing evidence_quote
+    # Synchronize evidence_source with the passage containing evidence_quote
     evidence_source = best_passage["source"]
     if evidence_quote:
         quote_words = set(re.findall(r'\b\w{4,}\b', evidence_quote.lower()))
         for p in passages:
             p_words = set(re.findall(r'\b\w{4,}\b', p["text"].lower()))
-            if quote_words and (len(quote_words & p_words) / len(quote_words)) >= 0.45:
+            if quote_words and (len(quote_words & p_words) / len(quote_words)) >= 0.35:
                 evidence_source = p["source"]
                 break
-
-    # 3. Signal B: NLI cross-check on top passage
-    verdict_b, nli_score = run_nli_signal(best_passage["text"], claim_text)
 
     # 4. Consensus arbitration
     if numeric_override and numeric_override[0] == "Contradicted":
         final_verdict = "Contradicted"
         confidence = numeric_override[1]
         evidence_source = numeric_override[2]["source"]
+        evidence_quote = numeric_override[2]["text"][:250]
         arbitration_mode = "Numeric Exact Override"
 
     elif not signal_a_available:
@@ -307,6 +435,29 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
         "rewritten_claim": None,
         "arbitration_mode": arbitration_mode
     }
+
+def verify_claims_batch(claim_items: List[Dict[str, Any]], passages_per_claim: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+    """
+    Fast batch verification: runs Gemini batch calls in 1-2 roundtrips,
+    runs DeBERTa multi-passage NLI locally, and executes consensus arbitration.
+    """
+    batch_input = [
+        {"claim_id": i + 1, "claim_text": item["claim_text"], "passages": passages}
+        for i, (item, passages) in enumerate(zip(claim_items, passages_per_claim))
+    ]
+
+    # 1. Run batched Gemini verification (1-2 calls total)
+    gemini_batch_results = run_llm_signal_batch(batch_input)
+
+    # 2. Arbitrate each claim
+    verified = []
+    for i, (item, passages) in enumerate(zip(claim_items, passages_per_claim)):
+        cid = i + 1
+        precomputed_a = gemini_batch_results.get(cid)
+        res = verify_single_claim(item, passages, precomputed_signal_a=precomputed_a)
+        verified.append(res)
+
+    return verified
 
 def check_pairwise_consistency(verified_claims: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Self-consistency pass: flag any claims within the same answer that directly contradict each other."""

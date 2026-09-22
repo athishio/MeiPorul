@@ -21,27 +21,31 @@ Rules:
 3. Keep the rewritten claim concise, factual, and direct.
 """
 
-def generate_grounded_rewrite(claim: str, evidence_snippet: str, evidence_source: str) -> Optional[str]:
+def generate_grounded_rewrite(claim: str, evidence_snippet: str, evidence_source: str, all_passages: Optional[List[Dict[str, Any]]] = None) -> Optional[str]:
     """Generates a grounded correction using Gemini or evidence distillation."""
     if not evidence_snippet or len(evidence_snippet.strip()) < 15:
-        return None
+        if not all_passages:
+            return None
 
     api_key = settings.GEMINI_API_KEY
     if not api_key:
-        # Heuristic fallback: return clean excerpt of evidence if key is absent
         cleaned = evidence_snippet.strip()
         if len(cleaned) > 20:
             return f"According to {evidence_source.split('(')[0].strip()}: {cleaned}"
         return None
 
+    if all_passages:
+        context_body = "\n\n".join([f"[{p.get('source')}]:\n{p.get('text')}" for p in all_passages])
+    else:
+        context_body = f"Source: {evidence_source}\nExcerpt: {evidence_snippet}"
+
     prompt = f"""Original Flagged Claim:
 \"{claim}\"
 
-Evidence Source: {evidence_source}
-Evidence Excerpt:
-\"\"\"{evidence_snippet}\"\"\"
+Evidence Context:
+\"\"\"{context_body}\"\"\"
 
-Rewrite the original claim so that it accurately reflects the facts proven by the evidence excerpt.
+Rewrite the original claim so that it accurately reflects the facts proven by the evidence context.
 Output JSON conforming to RewriteResult.
 """
 

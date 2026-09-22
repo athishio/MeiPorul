@@ -1,8 +1,10 @@
 """
 Real End-to-End Execution of Meiporul Fact-Checking Pipeline
 with Detailed Per-Claim Tracing & Instrumentation
-Includes Fixes for Bug 1 (Arbitration fallback), Bug 2 (Contradicted-only rewrites),
-Bug 3 (Source sync), and Bug 4 (Rate-limit backoff).
+Includes Fixes for:
+- Issue 1: Numeric Exact Override fixed (no false positive contradictions; checks semantic overlap).
+- Issue 2: Self-correcting rewrite investigation and context enrichment.
+- Issue 3: Batch concurrency and parallel retrieval (reducing latency from ~19.6 min to demo speed).
 """
 
 import sys
@@ -25,12 +27,13 @@ sys.path.insert(0, str(backend_dir))
 from app.config import settings
 from app.models import VerifyRequest
 from app.pipeline.extraction import extract_claims
-from app.pipeline.retrieval import retrieve_evidence
+from app.pipeline.retrieval import retrieve_evidence, retrieve_evidence_parallel
 from app.pipeline.verification import (
     init_nli_model, 
-    verify_single_claim, 
+    verify_single_claim,
+    verify_claims_batch,
     check_pairwise_consistency,
-    run_nli_signal,
+    run_nli_signal_on_passages,
     verify_numeric_claim
 )
 from app.pipeline.rewrite import generate_grounded_rewrite, reverify_rewrite
@@ -43,7 +46,7 @@ def run_detailed_pipeline():
     gemini_api_call_count = 0
 
     print("=" * 80)
-    print("MEIPORUL FACT-CHECKING PIPELINE — RE-RUN WITH BUG FIXES APPLIED")
+    print("MEIPORUL FACT-CHECKING PIPELINE — RE-RUN WITH BATCHING & BUG FIXES")
     print(f"Model: {settings.GEMINI_MODEL} | NLI: {settings.NLI_MODEL_NAME}")
     print("=" * 80)
 
@@ -54,62 +57,62 @@ def run_detailed_pipeline():
     print(f"NLI model ready in {time.time() - t_nli_start:.2f}s")
 
     # 2. Stage 1 — Extraction
-    print("\n[Stage 1: Claim Extraction via Gemini 2.5 Flash]")
+    print(f"\n[Stage 1: Claim Extraction via {settings.GEMINI_MODEL}]")
     t_ext_start = time.time()
     extracted_claims = extract_claims(INPUT_TEXT)
     gemini_api_call_count += 1
     t_ext_dur = time.time() - t_ext_start
     print(f"Extracted {len(extracted_claims)} atomic claims in {t_ext_dur:.2f}s (Gemini Call #{gemini_api_call_count})")
 
-    detailed_results = []
-    verified_claims_for_response = []
+    # 3. Stage 2 — Parallel Retrieval
+    print("\n[Stage 2: Parallel Multi-Source Retrieval (Wikipedia + Tavily)]")
+    t_ret_start = time.time()
+    passages_per_claim = retrieve_evidence_parallel(extracted_claims, max_workers=6)
+    print(f"Retrieved evidence for all {len(extracted_claims)} claims in {time.time() - t_ret_start:.2f}s")
 
-    # 3. Stages 2 & 3: Retrieval & Dual-Signal Verification per claim
-    for idx, claim_item in enumerate(extracted_claims, 1):
+    # 4. Stage 3 — Batched Verification (1-2 Gemini calls + local DeBERTa)
+    print("\n[Stage 3: Batched Verification (Gemini Batch + DeBERTa NLI + Safe Numeric Checks)]")
+    t_ver_start = time.time()
+    # Batch size is 10 in run_llm_signal_batch, so 20 claims = 2 Gemini calls
+    verified_claims = verify_claims_batch(extracted_claims, passages_per_claim)
+    gemini_api_call_count += (len(extracted_claims) + 9) // 10
+    print(f"Stage 3 verified {len(verified_claims)} claims in {time.time() - t_ver_start:.2f}s (Gemini Calls #{gemini_api_call_count})")
+
+    # 5. Self-consistency pass
+    verified_claims = check_pairwise_consistency(verified_claims)
+
+    detailed_results = []
+    # 6. Stages 4 & 5 — Rewrite & Re-verification Loop (only on Contradicted claims)
+    print("\n[Stages 4 & 5: Self-Correcting Rewrite & Re-verification Loop]")
+    for idx, (claim_item, v_res, passages) in enumerate(zip(extracted_claims, verified_claims, passages_per_claim), 1):
         claim_text = claim_item["claim_text"]
         is_numeric = claim_item.get("is_numeric", False)
         source_sent = claim_item.get("source_sentence", "")
+        final_verdict = v_res["verdict"]
 
-        print(f"\n--- Processing Claim {idx}/{len(extracted_claims)} ---")
-        print(f"Claim: \"{claim_text}\"")
-        print(f"Type: {'NUMERIC / Time-Sensitive' if is_numeric else 'GENERAL / Encyclopedic'}")
-
-        # Routing explanation
         if is_numeric and settings.TAVILY_API_KEY:
             route_reason = "Routed to Tavily first (real-time/numeric stats/dates), supplemented by Wikipedia"
         else:
             route_reason = "Routed to Wikipedia first (encyclopedic definition/historical fact), supplemented by Tavily"
 
-        # Stage 2: Retrieval
-        passages = retrieve_evidence(claim_text, is_numeric=is_numeric)
+        # Signal B trace
+        verdict_b, nli_score, _ = run_nli_signal_on_passages(passages, claim_text)
 
-        # Stage 3: Unified Verification (Single call per claim to conserve quota)
-        # Add gentle 1.5s pacing to respect 5 req/min burst limits
-        time.sleep(1.5)
-        
-        v_res = verify_single_claim(claim_item, passages)
-        gemini_api_call_count += 1
-        final_verdict = v_res["verdict"]
-
-        # Signal B trace for audit report
-        best_passage = passages[0]["text"] if passages else ""
-        verdict_b, nli_score = run_nli_signal(best_passage, claim_text) if best_passage else ("Not Enough Info", 0.0)
-
-        # Stage 4 & 5: BUG 2 FIX — Rewrite only triggers when verdict is Contradicted!
         candidate_rewrite = None
         reverify_status = None
 
         if final_verdict == "Contradicted":
-            print(f"  [TRIGGER] Verdict is Contradicted -> Initiating Stage 4/5 Grounded Rewrite...")
-            time.sleep(1.0)
+            print(f"  [TRIGGER] Claim {idx} is Contradicted -> Initiating Stage 4/5 Grounded Rewrite...")
             candidate_rewrite = generate_grounded_rewrite(
                 claim=claim_text,
                 evidence_snippet=v_res["evidence_snippet"],
-                evidence_source=v_res["evidence_source"]
+                evidence_source=v_res["evidence_source"],
+                all_passages=passages
             )
             gemini_api_call_count += 1
             if candidate_rewrite:
-                is_valid = reverify_rewrite(candidate_rewrite, v_res["evidence_snippet"])
+                combined_evidence = v_res["evidence_snippet"] + " " + " ".join([p["text"] for p in passages])
+                is_valid = reverify_rewrite(candidate_rewrite, combined_evidence)
                 reverify_status = "Passed (Grounded in Evidence)" if is_valid else "Failed (Introduced unverified terms)"
                 if is_valid:
                     v_res["rewritten_claim"] = candidate_rewrite
@@ -119,8 +122,6 @@ def run_detailed_pipeline():
                 reverify_status = "No correction possible from snippet"
         else:
             reverify_status = "Skipped (Verdict is not Contradicted)"
-
-        verified_claims_for_response.append(v_res)
 
         detailed_results.append({
             "index": idx,
@@ -142,12 +143,9 @@ def run_detailed_pipeline():
             "reverify_status": reverify_status
         })
 
-    # Self-consistency pass
-    verified_claims_for_response = check_pairwise_consistency(verified_claims_for_response)
-
     # Summary and annotation
-    summary = compute_summary_metrics(verified_claims_for_response)
-    annotated_answer = generate_annotated_answer(INPUT_TEXT, verified_claims_for_response)
+    summary = compute_summary_metrics(verified_claims)
+    annotated_answer = generate_annotated_answer(INPUT_TEXT, verified_claims)
     total_latency = time.time() - start_time
 
     # Construct standard schema response
@@ -161,7 +159,7 @@ def run_detailed_pipeline():
                 "confidence": c["confidence"],
                 "rewritten_claim": c.get("rewritten_claim")
             }
-            for c in verified_claims_for_response
+            for c in verified_claims
         ],
         "annotated_answer": annotated_answer,
         "summary": {
@@ -186,8 +184,9 @@ def run_detailed_pipeline():
         }, f, indent=2)
 
     print("\n" + "=" * 80)
-    print("RUN COMPLETE WITH BUG FIXES")
+    print("RUN COMPLETE WITH OPTIMIZATIONS AND BUG FIXES")
     print(f"Total Latency: {total_latency:.2f}s | Total Gemini API Calls: {gemini_api_call_count}")
+    print(f"Supported: {summary.percent_supported}% | Contradicted: {summary.percent_contradicted}% | NEI: {summary.percent_not_enough_info}%")
     print(f"Results saved to: {output_file}")
     print("=" * 80)
 
