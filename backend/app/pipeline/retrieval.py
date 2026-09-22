@@ -45,11 +45,17 @@ def compute_lexical_similarity(query: str, doc: str) -> float:
 
     return min(1.0, dot / (norm_q * norm_d))
 
+def extract_keywords_for_search(text: str) -> str:
+    """Extract significant keywords for search engines to prevent long-sentence timeouts."""
+    stopwords = {"the", "and", "that", "this", "with", "from", "was", "were", "been", "for", "which", "are", "process", "first"}
+    words = [w for w in re.sub(r'[^a-zA-Z0-9\s]', ' ', text).split() if w.lower() not in stopwords and len(w) > 2]
+    return " ".join(words[:6]) if words else text[:50]
+
 def fetch_wikipedia_passages(query: str, max_results: int = 3) -> List[Dict[str, Any]]:
     """Retrieve top Wikipedia article snippets using Wikipedia API."""
     passages = []
-    clean_query = re.sub(r'[^a-zA-Z0-9\s]', ' ', query).strip()
-    if not clean_query:
+    search_terms = extract_keywords_for_search(query)
+    if not search_terms:
         return passages
 
     try:
@@ -58,13 +64,13 @@ def fetch_wikipedia_passages(query: str, max_results: int = 3) -> List[Dict[str,
         params = {
             "action": "query",
             "list": "search",
-            "srsearch": clean_query,
+            "srsearch": search_terms,
             "format": "json",
             "srlimit": max_results
         }
         headers = {"User-Agent": "MeiporulFactChecker/1.0 (contact@meiporul.ai)"}
         
-        with httpx.Client(timeout=6.0) as client:
+        with httpx.Client(timeout=3.5) as client:
             resp = client.get(search_url, params=params, headers=headers)
             if resp.status_code == 200:
                 data = resp.json()

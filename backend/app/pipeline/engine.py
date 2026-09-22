@@ -49,9 +49,9 @@ def run_verification_pipeline(request: VerifyRequest) -> VerifyResponse:
     # Self-consistency check across claims
     verified_claims = check_pairwise_consistency(verified_claims)
 
-    # STAGES 4 & 5: Rewrite & Re-verification Loop
+    # STAGES 4 & 5: Rewrite & Re-verification Loop (only fires on Contradicted claims)
     for claim in verified_claims:
-        if claim["verdict"] in ("Contradicted", "Not Enough Info"):
+        if claim["verdict"] == "Contradicted":
             candidate_rewrite = generate_grounded_rewrite(
                 claim=claim["claim_text"],
                 evidence_snippet=claim["evidence_snippet"],

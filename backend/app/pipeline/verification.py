@@ -121,23 +121,52 @@ def run_nli_signal(premise: str, hypothesis: str) -> Tuple[str, float]:
     else:
         return "Not Enough Info", 0.70
 
+def call_gemini_with_backoff(client, model: str, contents: Any, config: Any, max_retries: int = 3):
+    """Executes a Gemini API call with exponential backoff on 429 rate-limits."""
+    import time
+    for attempt in range(max_retries):
+        try:
+            return client.models.generate_content(
+                model=model,
+                contents=contents,
+                config=config
+            )
+        except Exception as e:
+            err_str = str(e)
+            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                delay = 10 * (attempt + 1)
+                retry_match = re.search(r'retryDelay[\'"]?\s*:\s*[\'"]?(\d+)s', err_str)
+                if retry_match:
+                    delay = int(retry_match.group(1)) + 1
+                logger.warning(f"Gemini 429 rate-limit hit. Backing off for {delay}s (Attempt {attempt + 1}/{max_retries})...")
+                time.sleep(delay)
+            else:
+                raise e
+    # Final attempt after retries
+    return client.models.generate_content(
+        model=model,
+        contents=contents,
+        config=config
+    )
+
 def run_llm_signal(claim: str, passages: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Signal A: Gemini structured reasoning on claim + evidence passages.
+    Signal A: Gemini structured reasoning on claim + evidence passages with rate-limit backoff.
     """
     if not passages:
         return {
             "verdict": "Not Enough Info",
+            "is_available": True,
             "reasoning": "No relevant evidence passages found.",
             "evidence_quote": ""
         }
 
     api_key = settings.GEMINI_API_KEY
     if not api_key:
-        # Fallback when no Gemini API key is configured
         best_passage = passages[0]["text"]
         return {
             "verdict": "Supported" if len(passages) > 0 and passages[0]["similarity_score"] > 0.4 else "Not Enough Info",
+            "is_available": True,
             "reasoning": "Determined via baseline evidence alignment.",
             "evidence_quote": best_passage[:200]
         }
@@ -165,7 +194,8 @@ Provide JSON output with:
         from google.genai import types
 
         client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
+        response = call_gemini_with_backoff(
+            client=client,
             model=settings.GEMINI_MODEL,
             contents=user_prompt,
             config=types.GenerateContentConfig(
@@ -173,21 +203,25 @@ Provide JSON output with:
                 response_mime_type="application/json",
                 response_schema=LLMVerificationResult,
                 temperature=0.0,
-            )
+            ),
+            max_retries=3
         )
-        return json.loads(response.text)
+        parsed = json.loads(response.text)
+        parsed["is_available"] = True
+        return parsed
     except Exception as e:
-        logger.error(f"Gemini verification call failed: {e}")
+        logger.error(f"Gemini verification call failed after backoff: {e}")
         return {
-            "verdict": "Not Enough Info",
-            "reasoning": f"Verification error: {str(e)}",
+            "verdict": None,
+            "is_available": False,
+            "reasoning": f"Verification API error: {str(e)}",
             "evidence_quote": passages[0]["text"][:200] if passages else ""
         }
 
 def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Combines Signal A (LLM) and Signal B (NLI) with numeric rules.
-    Derives objective confidence score (never self-reported by LLM).
+    Fixes Bug 1 (Arbitration fallback to Signal B) and Bug 3 (Source sync).
     """
     claim_text = claim_item["claim_text"]
     is_numeric = claim_item.get("is_numeric", False)
@@ -199,7 +233,8 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
             "evidence_source": "None",
             "evidence_snippet": "No corroborating evidence retrieved.",
             "confidence": 0.50,
-            "rewritten_claim": None
+            "rewritten_claim": None,
+            "arbitration_mode": "No Evidence"
         }
 
     best_passage = passages[0]
@@ -216,8 +251,19 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
 
     # 2. Signal A: LLM verification
     signal_a = run_llm_signal(claim_text, passages)
-    verdict_a = signal_a.get("verdict", "Not Enough Info")
+    signal_a_available = signal_a.get("is_available", False)
+    verdict_a = signal_a.get("verdict")
     evidence_quote = signal_a.get("evidence_quote") or best_passage["text"][:250]
+
+    # Bug 3 Fix: Synchronize evidence_source with the exact passage containing evidence_quote
+    evidence_source = best_passage["source"]
+    if evidence_quote:
+        quote_words = set(re.findall(r'\b\w{4,}\b', evidence_quote.lower()))
+        for p in passages:
+            p_words = set(re.findall(r'\b\w{4,}\b', p["text"].lower()))
+            if quote_words and (len(quote_words & p_words) / len(quote_words)) >= 0.45:
+                evidence_source = p["source"]
+                break
 
     # 3. Signal B: NLI cross-check on top passage
     verdict_b, nli_score = run_nli_signal(best_passage["text"], claim_text)
@@ -227,25 +273,39 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
         final_verdict = "Contradicted"
         confidence = numeric_override[1]
         evidence_source = numeric_override[2]["source"]
+        arbitration_mode = "Numeric Exact Override"
+
+    elif not signal_a_available:
+        # BUG 1 FIX: Fall back to Signal B directly instead of collapsing to NEI
+        if verdict_b in ("Supported", "Contradicted") and nli_score >= 0.60:
+            final_verdict = verdict_b
+            confidence = round(min(0.95, (nli_score * 0.88) + (0.12 * avg_similarity)), 2)
+            arbitration_mode = f"Single-Signal Fallback (Signal B DeBERTa: {verdict_b}, score: {nli_score:.2f})"
+        else:
+            final_verdict = "Not Enough Info"
+            confidence = round(0.55 + (0.10 * avg_similarity), 2)
+            arbitration_mode = f"Single-Signal Fallback (Signal B score {nli_score:.2f} < 0.60 -> NEI)"
+
     elif verdict_a == verdict_b:
         final_verdict = verdict_a
-        # High confidence when both signals agree + similarity factor
-        base_conf = 0.86 if final_verdict != "Not Enough Info" else 0.70
-        confidence = min(0.99, base_conf + (0.12 * avg_similarity))
-        evidence_source = best_passage["source"]
+        base_conf = 0.88 if final_verdict != "Not Enough Info" else 0.70
+        confidence = round(min(0.99, base_conf + (0.10 * avg_similarity)), 2)
+        arbitration_mode = "Dual-Signal Consensus (Signal A and B Agree)"
+
     else:
         # Disagreement between Signal A and Signal B -> Mark "Not Enough Info"
         final_verdict = "Not Enough Info"
-        confidence = 0.58 + (0.10 * avg_similarity)
-        evidence_source = best_passage["source"]
+        confidence = round(0.58 + (0.10 * avg_similarity), 2)
+        arbitration_mode = f"Dual-Signal Conflict (A: {verdict_a} vs B: {verdict_b} -> NEI)"
 
     return {
         "claim_text": claim_text,
         "verdict": final_verdict,
         "evidence_source": evidence_source,
         "evidence_snippet": evidence_quote.strip(),
-        "confidence": round(float(confidence), 2),
-        "rewritten_claim": None
+        "confidence": confidence,
+        "rewritten_claim": None,
+        "arbitration_mode": arbitration_mode
     }
 
 def check_pairwise_consistency(verified_claims: List[Dict[str, Any]]) -> List[Dict[str, Any]]:

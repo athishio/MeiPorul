@@ -48,9 +48,11 @@ Output JSON conforming to RewriteResult.
     try:
         from google import genai
         from google.genai import types
+        from app.pipeline.verification import call_gemini_with_backoff
 
         client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
+        response = call_gemini_with_backoff(
+            client=client,
             model=settings.GEMINI_MODEL,
             contents=prompt,
             config=types.GenerateContentConfig(
@@ -58,7 +60,8 @@ Output JSON conforming to RewriteResult.
                 response_mime_type="application/json",
                 response_schema=RewriteResult,
                 temperature=0.0,
-            )
+            ),
+            max_retries=3
         )
         data = json.loads(response.text)
         if data.get("is_correctable") and data.get("rewritten_claim"):
