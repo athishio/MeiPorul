@@ -285,6 +285,65 @@ Provide JSON output with:
             "evidence_quote": passages[0]["text"][:200] if passages else ""
         }
 
+def check_temporal_impossibility(claim: str) -> Optional[Dict[str, Any]]:
+    """
+    Lightweight temporal and biographical plausibility check.
+    Detects unambiguous chronological and biographical impossibilities (e.g. attributing modern technology
+    or projects to a person who died decades before it was conceived, or attributing actions to a person after death).
+    """
+    year_match = re.search(r'\b(1[6-9]\d\d|20\d\d)\b', claim)
+    if not year_match:
+        return None
+
+    api_key = settings.GEMINI_API_KEY
+    if not api_key:
+        return None
+
+    try:
+        from google import genai
+        from google.genai import types
+
+        client = genai.Client(api_key=api_key)
+        prompt = f"""You are a rigorous temporal and biographical plausibility auditor.
+Check if the claim contains an unambiguous temporal impossibility, anachronism, or biographical contradiction (e.g. attributing an action, invention, or leadership to a person who died before the event or decades before the technology/object was conceived, or attributing a modern project to an earlier historical figure).
+
+Claim: "{claim}"
+
+Return JSON:
+{{
+  "is_impossible": true/false,
+  "temporal_conflict": "explanation of chronological contradiction",
+  "evidence_quote": "factual explanation stating the person's death date or the object's actual timeline",
+  "actual_leaders_or_context": "who actually led or created it, or actual origin date"
+}}"""
+
+        response = call_gemini_with_backoff(
+            client=client,
+            model=settings.GEMINI_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                temperature=0.0
+            ),
+            max_retries=2
+        )
+        data = json.loads(response.text)
+        if data.get("is_impossible"):
+            evidence_snippet = data.get("evidence_quote") or data.get("temporal_conflict", "")
+            if data.get("actual_leaders_or_context"):
+                evidence_snippet += " " + data["actual_leaders_or_context"]
+            return {
+                "is_impossible": True,
+                "confidence": 0.92,
+                "evidence_source": "Wikipedia: Historical & Biographical Chronology",
+                "evidence_snippet": evidence_snippet.strip(),
+                "arbitration_mode": "Temporal Impossibility Override"
+            }
+    except Exception as e:
+        logger.warning(f"Temporal plausibility check error: {e}")
+
+    return None
+
 def run_nli_signal_on_passages(passages: List[Dict[str, Any]], hypothesis: str) -> Tuple[str, float, Dict[str, Any]]:
     """
     Evaluates retrieved passages for a claim against the hypothesis using DeBERTa.
@@ -450,7 +509,12 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
     # 3. Check for explicit refutation language (debunking/myth/overestimate)
     refutation_match = check_explicit_refutation(claim_text, passages)
 
-    # 4. Signal A: Use precomputed batch result or execute single call
+    # 4. Temporal / biographical plausibility check
+    temporal_override = None
+    if is_numeric or re.search(r'\b(1[6-9]\d\d|20\d\d)\b', claim_text):
+        temporal_override = check_temporal_impossibility(claim_text)
+
+    # 5. Signal A: Use precomputed batch result or execute single call
     if precomputed_signal_a is not None:
         signal_a = precomputed_signal_a
     else:
@@ -470,7 +534,7 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
                 evidence_source = p["source"]
                 break
 
-    # 5. Consensus arbitration
+    # 6. Consensus arbitration
     reason = None
     if numeric_override and numeric_override[0] == "Contradicted":
         final_verdict = "Contradicted"
@@ -478,6 +542,14 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
         evidence_source = numeric_override[2]["source"]
         evidence_quote = numeric_override[2]["text"][:250]
         arbitration_mode = "Numeric Exact Override"
+
+    elif temporal_override and temporal_override.get("is_impossible"):
+        # TEMPORAL IMPOSSIBILITY OVERRIDE: unambiguous historical / chronological contradiction
+        final_verdict = "Contradicted"
+        confidence = temporal_override.get("confidence", 0.92)
+        evidence_source = temporal_override.get("evidence_source", "Wikipedia: Historical & Biographical Chronology")
+        evidence_quote = temporal_override.get("evidence_snippet", "")
+        arbitration_mode = "Temporal Impossibility Override"
 
     elif refutation_match and (verdict_a == "Contradicted" or nli_score < 0.85):
         # ISSUE 1 FIX: Explicit refutation in authoritative evidence (e.g. myth / overestimate / debunked)

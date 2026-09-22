@@ -4,8 +4,8 @@
       {
         "claim_text": "The James Webb Space Telescope was launched on December 25, 2021.",
         "verdict": "Supported",
-        "evidence_source": "James Webb Space Telescope (https://en.wikipedia.org/wiki/James_Webb_Space_Telescope)",
-        "evidence_snippet": "The Webb was launched on 25 December 2021",
+        "evidence_source": "Wikipedia: James Webb Space Telescope (https://en.wikipedia.org/wiki/James_Webb_Space_Telescope)",
+        "evidence_snippet": "The James Webb Space Telescope (JWST) launched on December 25, 2021",
         "confidence": 0.92,
         "rewritten_claim": null,
         "reason": null
@@ -13,17 +13,17 @@
       {
         "claim_text": "The James Webb Space Telescope was launched from Kourou, French Guiana.",
         "verdict": "Supported",
-        "evidence_source": "Launch - NASA Science (https://science.nasa.gov/mission/webb/launch)",
-        "evidence_snippet": "Webb was launched from Arianespace's ELA-3 launch complex at Europe's Spaceport located near Kourou, French Guiana.",
-        "confidence": 0.92,
+        "evidence_source": "NASA's revolutionary space telescope launched from French Guiana | Science & Technology | unionleader.com (https://www.unionleader.com/news/scitech/nasas-revolutionary-space-telescope-launched-from-french-guiana/article_6fd50d29-4f50-5449-afff-a63e80c14562.html)",
+        "evidence_snippet": "Arianespace\u2019s Ariane 5 rocket, with NASA\u2019s James Webb Space Telescope onboard, launches Saturday from Europe\u2019s Spaceport, the Guiana Space Center in Kourou, French Guiana",
+        "confidence": 0.93,
         "rewritten_claim": null,
         "reason": null
       },
       {
         "claim_text": "The James Webb Space Telescope orbits the Sun at the Second Lagrange Point (L2).",
         "verdict": "Supported",
-        "evidence_source": "James Webb Space Telescope (https://en.wikipedia.org/wiki/James_Webb_Space_Telescope)",
-        "evidence_snippet": "The James Webb Space Telescope orbits the Sun near Sun-Earth Lagrange point 2 (L2)",
+        "evidence_source": "Webb's Orbit (https://science.nasa.gov/mission/webb/orbit)",
+        "evidence_snippet": "it actually orbits the Sun, 1.5 million kilometers (1 million miles) away from the Earth at what is called the second Lagrange point or L2.",
         "confidence": 0.93,
         "rewritten_claim": null,
         "reason": null
@@ -31,7 +31,7 @@
       {
         "claim_text": "The Second Lagrange Point (L2) is approximately 1.5 million kilometers from Earth.",
         "verdict": "Supported",
-        "evidence_source": "Webb's Orbit at Sun-Earth Lagrange Point 2 (L2) - NASA Science (https://science.nasa.gov/asset/webb/webbs-orbit-at-sun-earth-lagrange-point-2-l2)",
+        "evidence_source": "Webb's Orbit at Sun-Earth Lagrange Point 2 (L2) (https://science.nasa.gov/asset/webb/webbs-orbit-at-sun-earth-lagrange-point-2-l2)",
         "evidence_snippet": "L2 lies about 1.5 million kilometres (roughly 930,000 miles) from Earth",
         "confidence": 0.91,
         "rewritten_claim": null,
@@ -39,30 +39,30 @@
       },
       {
         "claim_text": "The James Webb Space Telescope was designed and built under the leadership of Albert Einstein in 1955.",
-        "verdict": "Not Enough Info",
-        "evidence_source": "Wikipedia: James Webb Space Telescope (https://en.wikipedia.org/wiki/James_Webb_Space_Telescope)",
-        "evidence_snippet": "The mid-IR-to-visible band successor to the Hubble telescope is the James Webb Space Telescope (JWST), which was launched on December 25, 2021",
-        "confidence": 0.63,
-        "rewritten_claim": null,
-        "reason": "conflicting_signals"
+        "verdict": "Contradicted",
+        "evidence_source": "Wikipedia: Historical & Biographical Chronology",
+        "evidence_snippet": "Albert Einstein died on April 18, 1955. The James Webb Space Telescope project was formally initiated in 1996, with construction beginning in 2004. The James Webb Space Telescope was a collaborative project led by NASA, the European Space Agency (ESA), and the Canadian Space Agency (CSA), with key leadership figures including project managers like Bill Ochs and scientists like John Mather.",
+        "confidence": 0.92,
+        "rewritten_claim": "The James Webb Space Telescope was launched on December 25, 2021, to conduct infrared astronomy and observe some of the faintest, oldest objects in the universe.",
+        "reason": null
       },
       {
         "claim_text": "Humans only use 10% of their brains during astronomical observation tasks.",
         "verdict": "Contradicted",
-        "evidence_source": "MythBuster: Do We Only Use 10% of Our Brain \u2014 STEAM Ahead \u2014 STEAM Ahead (https://www.westeamahead.org/blog/do-we-only-use-10-of-our-brain)",
-        "evidence_snippet": "The myth that humans only use 10% of their brains is FALSE. Movies like Lucy and Limitless fuel this idea. These stories suggest that unlocking more of our brain could grant superhuman abilities, such as telekinesis or infinite memory. Science, howev",
+        "evidence_source": "Do Humans Only Use 10% of Their Brains? The Myth and the Science Behind Brain Use - Debunk The Myth (https://www.debunkthemyth.org/2025/07/13/do-humans-only-use-10-of-their-brains-the-myth-and-the-science-behind-brain-use)",
+        "evidence_snippet": "The belief that humans only use 10% of their brains has persisted for over a century. This misconception draws from various historical ideas, influential figures, and a strong presence in popular culture.\n\n### Historical Misconceptions [...] The idea",
         "confidence": 0.9,
-        "rewritten_claim": "The idea that humans only use 10% of their brains is a false myth.",
+        "rewritten_claim": "The belief that humans only use 10% of their brains is a widespread myth.",
         "reason": null
       },
       {
         "claim_text": "In February 2024, Intuitive Machines' Odysseus lander achieved the first commercial lunar landing on the Moon.",
-        "verdict": "Not Enough Info",
+        "verdict": "Supported",
         "evidence_source": "Wikipedia: Intuitive Machines (https://en.wikipedia.org/wiki/Intuitive_Machines)",
-        "evidence_snippet": "Odysseus is the 26th lander to successfully touch down on the lunar surface.",
-        "confidence": 0.75,
+        "evidence_snippet": "Intuitive Machines, Inc. ... today announced the completion of science and data transmission for all NASA and commercial payloads onboard Odysseus, the Nova-C class lunar lander, after the successful February 22 soft landing",
+        "confidence": 0.92,
         "rewritten_claim": null,
-        "reason": "insufficient_detail"
+        "reason": null
       },
       {
         "claim_text": "The Intuitive Machines' Odysseus lander mission was part of NASA's CLPS initiative.",
@@ -77,13 +77,13 @@
     "annotated_answer": "The James Webb Space Telescope (JWST) was launched on December 25, 2021, from Kourou, French Guiana. It orbits the Sun at the Second Lagrange Point (L2), approximately 1.5 million kilometers from Earth. JWST was designed and built under the leadership of Albert Einstein in 1955. Humans only use 10% of their brains during astronomical observation tasks. [Contradicted] In February 2024, Intuitive Machines' Odysseus lander achieved the first commercial lunar landing on the Moon as part of NASA's CLPS initiative.",
     "summary": {
       "total_claims": 8,
-      "percent_supported": 62.5,
-      "percent_contradicted": 12.5,
-      "percent_not_enough_info": 25.0,
-      "avg_confidence": 0.854
+      "percent_supported": 75.0,
+      "percent_contradicted": 25.0,
+      "percent_not_enough_info": 0.0,
+      "avg_confidence": 0.913
     }
   },
   "metrics": {
-    "total_latency_seconds": 40.87
+    "total_latency_seconds": 43.64
   }
 }
