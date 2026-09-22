@@ -1,5 +1,12 @@
 # Meiporul (மெய்பொருள்) — Tool Interface
 
+> ### 📜 குறள் 423
+> **"எப்பொருள் யார்யார்வாய்க் கேட்பினும் அப்பொருள்**  
+> **மெய்ப்பொருள் காண்ப தறிவு"**  
+> *"Whosoever says whatever, to discern the ultimate truth therein is wisdom."* — திருவள்ளுவர்
+
+---
+
 > **"A fact-verification tool other LLMs can call before answering — it checks every claim against evidence, flags what's wrong, and rewrites it before the user ever sees it."**
 
 Meiporul is designed as a **post-hoc verification tool** that downstream agent frameworks or LLMs invoke immediately after draft generation and prior to user delivery.

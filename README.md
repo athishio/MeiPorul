@@ -1,6 +1,15 @@
 # Meiporul (மெய்பொருள்)
 
-> *"A fact-verification tool other LLMs can call before answering — it checks every claim against evidence, flags what's wrong, and rewrites it before the user ever sees it."*
+> ### 📜 குறள் (Kural 423 — அறிவுடைமை / The Possession of Wisdom)
+> **"எப்பொருள் யார்யார்வாய்க் கேட்பினும் அப்பொருள்**  
+> **மெய்ப்பொருள் காண்ப தறிவு"**  
+>  
+> *"Whosoever says whatever, to discern the ultimate truth and substance therein is true wisdom."*  
+> — **திருவள்ளுவர் (Thiruvalluvar)**
+
+---
+
+> **One-line pitch**: *"A fact-verification tool other LLMs can call before answering — it checks every claim against evidence, flags what's wrong, and rewrites it before the user ever sees it."*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg?logo=python&logoColor=white)](https://python.org)
@@ -11,7 +20,7 @@
 
 ## 🏛️ What is Meiporul?
 
-In Tamil philosophy, **மெய்பொருள் (Meiporul)** means *"the ultimate truth / true substance"* (from the classic Tirukkural: *"Whosoever says whatever, to discern the truth therein is wisdom"*).
+Named after the timeless verse from the **Tirukkural**, **மெய்பொருள் (Meiporul)** represents the pursuit of essential truth regardless of who speaks it. In modern AI ecosystems, LLMs speak with compelling fluency, yet frequently hallucinate fabricated citations, false historical dates, and inaccurate claims.
 
 **Meiporul** is an autonomous post-hoc fact-checking and self-correcting tool designed to sit between LLM generation and human delivery. Instead of interrupting generation or hallucinating unchecked, downstream agents pass draft answers to Meiporul, which:
 1. Decomposes statements into atomic verifiable claims (FActScore-style).

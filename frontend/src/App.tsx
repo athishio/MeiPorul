@@ -73,11 +73,48 @@ export function App() {
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Tirukkural Philosophy Hero Card */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-950/30 via-slate-900 to-emerald-950/30 border border-amber-500/25 p-5 shadow-2xl backdrop-blur">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="text-amber-400 text-xs font-semibold tracking-wider uppercase flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                  திருக்குறள் • Kural 423
+                </span>
+                <span className="text-slate-600 text-xs">•</span>
+                <span className="text-xs text-slate-400">The Philosophical Inspiration of Meiporul</span>
+              </div>
+              
+              <div className="space-y-1">
+                <p className="text-base sm:text-lg font-serif text-amber-200/95 tracking-wide leading-relaxed">
+                  "எப்பொருள் யார்யார்வாய்க் கேட்பினும் அப்பொருள்
+                </p>
+                <p className="text-base sm:text-lg font-serif text-amber-300 font-semibold tracking-wide leading-relaxed">
+                  &nbsp;மெய்ப்பொருள் காண்ப தறிவு"
+                </p>
+              </div>
+
+              <p className="text-xs text-slate-300/90 italic pt-0.5">
+                "Whosoever says whatever, to discern the ultimate truth therein is wisdom." — Thiruvalluvar
+              </p>
+            </div>
+
+            <div className="hidden lg:flex flex-col items-end text-right justify-center border-l border-slate-800/80 pl-6 shrink-0">
+              <div className="text-xs text-slate-400 font-medium">Post-Hoc Fact-Verification</div>
+              <div className="text-sm font-bold text-emerald-400">Autonomous LLM Safeguard</div>
+              <div className="text-xs text-slate-400 mt-1 max-w-[230px]">
+                Checks every factual claim against evidence before the user ever sees it.
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Pitch Banner */}
         <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-cyan-950/40 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-lg">
           <div className="space-y-0.5">
             <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5" />
+              <ShieldCheck className="h-3.5 w-3.5" />
               Core Architecture & Flow
             </div>
             <p className="text-sm font-medium text-slate-200">
