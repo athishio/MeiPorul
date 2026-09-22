@@ -76,7 +76,7 @@ See [`tool/README.md`](tool/README.md) for full OpenAI and Anthropic SDK integra
 ```bash
 cd backend
 python -m pip install -r requirements.txt
-cp .env.example .env   # Add GEMINI_API_KEY and optional TAVILY_API_KEY
+# Create .env with GEMINI_API_KEY and optional TAVILY_API_KEY
 uvicorn app.main:app --reload --port 8000
 ```
 Swagger API docs available at `http://localhost:8000/docs`.
