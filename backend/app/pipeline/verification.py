@@ -152,6 +152,48 @@ def check_explicit_refutation(claim: str, passages: List[Dict[str, Any]]) -> Opt
                 return (match.group(0), p)
     return None
 
+# Scope qualifiers indicating conditional, rare, or exceptional circumstance in evidence
+SCOPE_QUALIFIER_PATTERNS = [
+    r'\b(?:during|in)\s+(?:severe|extreme|rare|unusual|specific|particular)\s+(?:weather|storms?|thunderstorms?|events?|conditions?|circumstances?)\b',
+    r'\b(?:thunderstorm\s+clouds?|severe\s+weather|tornado(?:es)?)\b',
+    r'\b(?:in\s+rare\s+cases|on\s+rare\s+occasions|under\s+specific\s+conditions|only\s+when|only\s+if|rare\s+exception)\b',
+    r'\b(?:fanciful\s+belief|popular\s+myth|myth\s+that|common\s+misconception|widely\s+believed\s+myth|folklore|urban\s+legend)\b',
+    r'\b(?:optical\s+illusion|optical\s+effect|perceptual\s+illusion|explaining\s+why\s+the\s+eye\s+perceives\s+it\s+as|perceives\s+it\s+as\s+\w+\s+instead)\b',
+    r'\b(?:under\s+abnormal\s+conditions|rare\s+phenomenon|exceptional\s+circumstances?)\b'
+]
+
+CLAIM_QUALIFIER_PATTERNS = [
+    r'\b(?:sometimes|occasionally|rarely|under certain|under specific|during|in some cases|in rare cases|can appear|can look|may appear|at times|temporarily|conditionally|under specific conditions|in severe weather|during storms?)\b'
+]
+
+def check_evidence_scope_mismatch(claim_text: str, evidence_text: str) -> Optional[str]:
+    """
+    Detects if an unqualified/unconditional categorical claim (e.g. 'The sky is green')
+    is being inappropriately supported by evidence that describes an exceptional, rare,
+    conditional, or perception-based anomaly (e.g. thunderstorm cloud optical scattering).
+    Returns a reason string if a scope mismatch is detected, else None.
+    """
+    if not claim_text or not evidence_text:
+        return None
+
+    # 1. Check if the claim contains explicit conditional or scope qualifiers
+    is_claim_qualified = any(re.search(pat, claim_text, re.IGNORECASE) for pat in CLAIM_QUALIFIER_PATTERNS)
+    if is_claim_qualified:
+        # The claim itself already specifies conditions (e.g., 'The sky can appear green during thunderstorms')
+        return None
+
+    # 2. Check if the supporting evidence contains strong conditional/exceptional qualifiers
+    matched_qualifiers = []
+    for pat in SCOPE_QUALIFIER_PATTERNS:
+        match = re.search(pat, evidence_text, re.IGNORECASE)
+        if match:
+            matched_qualifiers.append(match.group(0))
+
+    if matched_qualifiers:
+        return f"Evidence describes a conditional/exceptional circumstance ('{matched_qualifiers[0]}') rather than the general/default state asserted in the unconditional claim."
+
+    return None
+
 def run_nli_signal(premise: str, hypothesis: str) -> Tuple[str, float]:
     """
     Signal B: Natural Language Inference cross-encoder check using DeBERTa.
@@ -634,6 +676,19 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
         confidence = round(0.55 + (0.10 * avg_similarity), 2)
         arbitration_mode = f"Direct Conflict (A: {verdict_a} vs B: {verdict_b} -> NEI)"
         reason = "conflicting_signals"
+
+    # Scope / Condition Consistency Check
+    # Prevents misleading-but-topically-related snippets from producing false Supported verdicts
+    # on general/unconditional claims (e.g. rare thunderstorm optical green sky effect supporting "The sky is green").
+    if final_verdict == "Supported":
+        evidence_context = f"{evidence_quote} {best_passage.get('text', '')}"
+        scope_mismatch = check_evidence_scope_mismatch(claim_text, evidence_context)
+        if scope_mismatch:
+            final_verdict = "Not Enough Info"
+            confidence = 0.65
+            reason = "evidence_scope_mismatch"
+            arbitration_mode = f"Scope Mismatch Filter ({scope_mismatch})"
+            logger.info(f"Scope mismatch filtered Supported claim '{claim_text}': {scope_mismatch}")
 
     # ISSUE 5 FIX: Assign machine-readable reason code to every NEI verdict
     if final_verdict == "Not Enough Info":

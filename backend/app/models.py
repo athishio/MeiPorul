@@ -27,7 +27,7 @@ class ClaimResult(BaseModel):
     )
     reason: Optional[str] = Field(
         default=None,
-        description="Machine-readable reason code when verdict is Not Enough Info: no_matching_evidence | conflicting_signals | low_confidence_threshold | insufficient_detail"
+        description="Machine-readable reason code when verdict is Not Enough Info: no_matching_evidence | conflicting_signals | low_confidence_threshold | insufficient_detail | evidence_scope_mismatch"
     )
 
 class SummaryMetrics(BaseModel):
