@@ -21,7 +21,13 @@ Rules:
 3. Keep the rewritten claim concise, factual, and direct.
 """
 
-def generate_grounded_rewrite(claim: str, evidence_snippet: str, evidence_source: str, all_passages: Optional[List[Dict[str, Any]]] = None) -> Optional[str]:
+def generate_grounded_rewrite(
+    claim: str, 
+    evidence_snippet: str, 
+    evidence_source: str, 
+    all_passages: Optional[List[Dict[str, Any]]] = None,
+    arbitration_mode: Optional[str] = None
+) -> Optional[str]:
     """Generates a grounded correction using Gemini or evidence distillation."""
     if not evidence_snippet or len(evidence_snippet.strip()) < 15:
         if not all_passages:
@@ -34,17 +40,26 @@ def generate_grounded_rewrite(claim: str, evidence_snippet: str, evidence_source
             return f"According to {evidence_source.split('(')[0].strip()}: {cleaned}"
         return None
 
+    context_body = f"[Primary Evidence - {evidence_source}]:\n{evidence_snippet}"
     if all_passages:
-        context_body = "\n\n".join([f"[{p.get('source')}]:\n{p.get('text')}" for p in all_passages])
-    else:
-        context_body = f"Source: {evidence_source}\nExcerpt: {evidence_snippet}"
+        context_body += "\n\n" + "\n\n".join([f"[{p.get('source')}]:\n{p.get('text')}" for p in all_passages])
+
+    temporal_guidance = ""
+    if arbitration_mode == "Temporal Impossibility Override":
+        temporal_guidance = """
+SPECIAL TEMPORAL IMPOSSIBILITY INSTRUCTION:
+This claim was refuted due to anachronism or temporal impossibility (e.g. false attribution of leadership, invention, or creation to a historical figure who died before the project/technology was conceived).
+Do NOT simply drop the false attribution or change the subject to launch dates or general descriptions.
+You MUST explicitly state the correct entity responsible for the action/leadership and contrast it with the false figure, strictly in this format:
+"[Subject] was [designed/built/led by correct attribution from evidence] — not [false figure], who [reason it is impossible from evidence, e.g. died in YEAR, years before the project was initiated in YEAR]."
+"""
 
     prompt = f"""Original Flagged Claim:
 \"{claim}\"
 
 Evidence Context:
 \"\"\"{context_body}\"\"\"
-
+{temporal_guidance}
 Rewrite the original claim so that it accurately reflects the facts proven by the evidence context.
 Output JSON conforming to RewriteResult.
 """

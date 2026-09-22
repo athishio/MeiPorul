@@ -107,7 +107,8 @@ def run_detailed_pipeline():
                 claim=claim_text,
                 evidence_snippet=v_res["evidence_snippet"],
                 evidence_source=v_res["evidence_source"],
-                all_passages=passages
+                all_passages=passages,
+                arbitration_mode=v_res.get("arbitration_mode")
             )
             gemini_api_call_count += 1
             if candidate_rewrite:

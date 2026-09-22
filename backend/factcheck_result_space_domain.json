@@ -13,9 +13,9 @@
       {
         "claim_text": "The James Webb Space Telescope was launched from Kourou, French Guiana.",
         "verdict": "Supported",
-        "evidence_source": "NASA's revolutionary space telescope launched from French Guiana | Science & Technology | unionleader.com (https://www.unionleader.com/news/scitech/nasas-revolutionary-space-telescope-launched-from-french-guiana/article_6fd50d29-4f50-5449-afff-a63e80c14562.html)",
-        "evidence_snippet": "Arianespace\u2019s Ariane 5 rocket, with NASA\u2019s James Webb Space Telescope onboard, launches Saturday from Europe\u2019s Spaceport, the Guiana Space Center in Kourou, French Guiana",
-        "confidence": 0.93,
+        "evidence_source": "Launch - NASA Science (https://science.nasa.gov/mission/webb/launch)",
+        "evidence_snippet": "Webb was launched from Arianespace's ELA-3 launch complex at Europe's Spaceport located near Kourou, French Guiana.",
+        "confidence": 0.92,
         "rewritten_claim": null,
         "reason": null
       },
@@ -23,7 +23,7 @@
         "claim_text": "The James Webb Space Telescope orbits the Sun at the Second Lagrange Point (L2).",
         "verdict": "Supported",
         "evidence_source": "Webb's Orbit (https://science.nasa.gov/mission/webb/orbit)",
-        "evidence_snippet": "it actually orbits the Sun, 1.5 million kilometers (1 million miles) away from the Earth at what is called the second Lagrange point or L2.",
+        "evidence_snippet": "The James Webb Space Telescope is not in orbit around the Earth, like the Hubble Space Telescope is - it actually orbits the Sun, 1.5 million kilometers (1 million miles) away from the Earth at what is called the second Lagrange point or L2.",
         "confidence": 0.93,
         "rewritten_claim": null,
         "reason": null
@@ -43,16 +43,16 @@
         "evidence_source": "Wikipedia: Historical & Biographical Chronology",
         "evidence_snippet": "Albert Einstein died on April 18, 1955. The James Webb Space Telescope project was formally initiated in 1996, with construction beginning in 2004. The James Webb Space Telescope was a collaborative project led by NASA, the European Space Agency (ESA), and the Canadian Space Agency (CSA), with key leadership figures including project managers like Bill Ochs and scientists like John Mather.",
         "confidence": 0.92,
-        "rewritten_claim": "The James Webb Space Telescope was launched on December 25, 2021, to conduct infrared astronomy and observe some of the faintest, oldest objects in the universe.",
+        "rewritten_claim": "The James Webb Space Telescope was a collaborative project led by NASA, the European Space Agency, and the Canadian Space Agency \u2014 not Albert Einstein, who died in 1955, decades before the project was formally initiated in 1996.",
         "reason": null
       },
       {
         "claim_text": "Humans only use 10% of their brains during astronomical observation tasks.",
         "verdict": "Contradicted",
-        "evidence_source": "Do Humans Only Use 10% of Their Brains? The Myth and the Science Behind Brain Use - Debunk The Myth (https://www.debunkthemyth.org/2025/07/13/do-humans-only-use-10-of-their-brains-the-myth-and-the-science-behind-brain-use)",
-        "evidence_snippet": "The belief that humans only use 10% of their brains has persisted for over a century. This misconception draws from various historical ideas, influential figures, and a strong presence in popular culture.\n\n### Historical Misconceptions [...] The idea",
+        "evidence_source": "MythBuster: Do We Only Use 10% of Our Brain (https://www.westeamahead.org/blog/do-we-only-use-10-of-our-brain)",
+        "evidence_snippet": "The myth that humans only use 10% of their brains is FALSE. Movies like Lucy and Limitless fuel this idea. These stories suggest that unlocking more of our brain could grant superhuman abilities, such as telekinesis or infinite memory. Science, howev",
         "confidence": 0.9,
-        "rewritten_claim": "The belief that humans only use 10% of their brains is a widespread myth.",
+        "rewritten_claim": "The idea that humans only use 10% of their brains is a false myth.",
         "reason": null
       },
       {
@@ -80,10 +80,10 @@
       "percent_supported": 75.0,
       "percent_contradicted": 25.0,
       "percent_not_enough_info": 0.0,
-      "avg_confidence": 0.913
+      "avg_confidence": 0.911
     }
   },
   "metrics": {
-    "total_latency_seconds": 43.64
+    "total_latency_seconds": 43.63
   }
 }

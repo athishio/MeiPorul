@@ -55,7 +55,8 @@ def run_verification_pipeline(request: VerifyRequest) -> VerifyResponse:
                 claim=claim["claim_text"],
                 evidence_snippet=claim["evidence_snippet"],
                 evidence_source=claim["evidence_source"],
-                all_passages=claim_passages
+                all_passages=claim_passages,
+                arbitration_mode=claim.get("arbitration_mode")
             )
             if candidate_rewrite:
                 # Stage 5: Re-verify rewrite against evidence
