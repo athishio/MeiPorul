@@ -1,13 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="overflow-x-hidden">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meiporul (மெய்பொருள்) — Autonomous Fact-Verification Tool</title>
-    <meta name="description" content="A fact-verification tool other LLMs can call before answering — it checks every claim against evidence, flags what's wrong, and rewrites it before the user ever sees it." />
+    <title>Meiporul (மெய்பொருள்) // Signal Integrity & Fact-Verification Terminal</title>
+    <meta name="description" content="Autonomous CRT-diagnostic fact-verification tool for LLM outputs — verifies atomic claims against evidence signals before user rendering." />
+    <!-- Google Fonts: Silkscreen (Display), Pixelify Sans (Body), JetBrains Mono (Data/Caption) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500;600;700&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
   </head>
-  <body class="bg-slate-50 text-slate-900 min-h-screen antialiased">
+  <body class="bg-[#16120f] text-[#cecdc9] min-h-screen antialiased selection:bg-[#ed670f]/30 selection:text-[#fff] overflow-x-hidden w-full max-w-full">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

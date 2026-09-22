@@ -1,52 +1,146 @@
-import React from 'react';
-import { ShieldCheck, Code, Sparkles } from 'lucide-react';
-import { API_BASE_URL } from '../config';
+import React, { useState } from 'react';
+import { ArrowRight, Menu, X } from 'lucide-react';
 
 interface HeaderProps {
   onOpenSchemaModal: () => void;
+  onNavigateToSection: (sectionId: string) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenSchemaModal }) => {
+export const Header: React.FC<HeaderProps> = ({ onNavigateToSection }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleNavClick = (sectionId: string) => {
+    onNavigateToSection(sectionId);
+    setMobileMenuOpen(false);
+  };
+
   return (
-    <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <ShieldCheck className="h-6 w-6 text-slate-950 stroke-[2.5]" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                Meiporul
-                <span className="text-xs font-normal text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded-full">
-                  மெய்பொருள்
-                </span>
-              </h1>
-              <span className="text-xs text-slate-400 hidden md:inline">|</span>
-              <span className="text-xs text-slate-400 hidden md:inline">Autonomous Fact-Verification Tool</span>
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-[rgba(255,255,255,0.12)] bg-[#201c19]/95 backdrop-blur-md">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+        {/* Left: Brand Logo with Circular Eye Motif */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => handleNavClick('hero')}
+            className="flex items-center gap-2.5 text-left group"
+          >
+            <div className="h-8 w-8 rounded-full bg-[#16120f] border border-[#ed670f]/50 flex items-center justify-center text-[#ed670f] group-hover:border-[#ed670f] transition-colors">
+              <span className="text-sm select-none">👁</span>
             </div>
-            <p className="text-xs text-slate-400">
-              The post-hoc verification & self-correcting tool other LLMs call before answering.
-            </p>
-          </div>
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold tracking-tight text-white font-display">
+                Meiporul
+              </span>
+              <span className="text-[10px] font-mono text-[#ed670f] bg-[#622d08]/40 border border-[#ed670f]/40 px-1.5 py-0.5 rounded-[10px] hidden sm:inline">
+                மெய்பொருள்
+              </span>
+            </div>
+          </button>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800/80 border border-slate-700/60 text-xs text-slate-300">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Target: <code className="text-slate-400">{API_BASE_URL}</code></span>
-          </div>
-
+        {/* Center: Navigation Links in requested order:
+            1. Product, 2. Architecture, 3. Demo, 4. Research, 5. Docs */}
+        <nav className="hidden md:flex items-center gap-7 text-xs font-mono">
           <button
-            onClick={onOpenSchemaModal}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-slate-600 transition-colors shadow-sm"
+            type="button"
+            onClick={() => handleNavClick('hero')}
+            className="text-[#cecdc9] hover:text-white hover-chromatic transition-colors tracking-wide"
           >
-            <Code className="h-3.5 w-3.5 text-cyan-400" />
-            <span>View Tool Schema</span>
-            <Sparkles className="h-3 w-3 text-amber-400" />
+            Product
+          </button>
+          <button
+            type="button"
+            onClick={() => handleNavClick('pipeline')}
+            className="text-[#cecdc9] hover:text-white hover-chromatic transition-colors tracking-wide"
+          >
+            Architecture
+          </button>
+          <button
+            type="button"
+            onClick={() => handleNavClick('verify-tool')}
+            className="text-[#cecdc9] hover:text-white hover-chromatic transition-colors tracking-wide"
+          >
+            Demo
+          </button>
+          <button
+            type="button"
+            onClick={() => handleNavClick('about')}
+            className="text-[#cecdc9] hover:text-white hover-chromatic transition-colors tracking-wide"
+          >
+            Research
+          </button>
+          <button
+            type="button"
+            onClick={() => handleNavClick('docs')}
+            className="text-white font-bold hover:text-[#ed670f] hover-chromatic transition-colors tracking-wide"
+          >
+            Docs
+          </button>
+        </nav>
+
+        {/* Right: Try Meiporul Button */}
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+          <button
+            type="button"
+            onClick={() => handleNavClick('verify-tool')}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-[10px] text-xs font-mono font-bold bg-[#16120f] hover:bg-[#292623] text-[#ed670f] border border-[#ed670f]/60 hover:border-[#ed670f] transition-all"
+          >
+            <span>Try Meiporul</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+
+          {/* Mobile Menu Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-1.5 text-[#cecdc9] hover:text-white bg-[#16120f] border border-[rgba(255,255,255,0.15)] transition-colors"
+            aria-label="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5 text-[#ed670f]" /> : <Menu className="h-5 w-5 text-white" />}
           </button>
         </div>
       </div>
+
+      {/* Responsive Mobile Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-[#201c19] border-t border-[rgba(255,255,255,0.1)] px-4 py-3 space-y-2 text-xs font-mono">
+          <button
+            type="button"
+            onClick={() => handleNavClick('hero')}
+            className="block w-full text-left py-2 px-3 text-[#cecdc9] hover:text-white hover:bg-[#16120f] border-b border-[rgba(255,255,255,0.05)] transition-colors"
+          >
+            &gt; Product
+          </button>
+          <button
+            type="button"
+            onClick={() => handleNavClick('pipeline')}
+            className="block w-full text-left py-2 px-3 text-[#cecdc9] hover:text-white hover:bg-[#16120f] border-b border-[rgba(255,255,255,0.05)] transition-colors"
+          >
+            &gt; Architecture
+          </button>
+          <button
+            type="button"
+            onClick={() => handleNavClick('verify-tool')}
+            className="block w-full text-left py-2 px-3 text-[#cecdc9] hover:text-white hover:bg-[#16120f] border-b border-[rgba(255,255,255,0.05)] transition-colors"
+          >
+            &gt; Demo
+          </button>
+          <button
+            type="button"
+            onClick={() => handleNavClick('about')}
+            className="block w-full text-left py-2 px-3 text-[#cecdc9] hover:text-white hover:bg-[#16120f] border-b border-[rgba(255,255,255,0.05)] transition-colors"
+          >
+            &gt; Research
+          </button>
+          <button
+            type="button"
+            onClick={() => handleNavClick('docs')}
+            className="block w-full text-left py-2 px-3 text-white font-bold hover:bg-[#16120f] transition-colors"
+          >
+            &gt; Docs (API & Schemas)
+          </button>
+        </div>
+      )}
     </header>
   );
 };

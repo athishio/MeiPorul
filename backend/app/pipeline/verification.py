@@ -1,6 +1,7 @@
 import re
 import json
 import logging
+from urllib.parse import urlparse
 from typing import List, Dict, Any, Tuple, Optional
 from pydantic import BaseModel, Field
 
@@ -626,12 +627,14 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
 
     # Synchronize evidence_source with the passage containing evidence_quote
     evidence_source = best_passage["source"]
+    matched_passage = best_passage
     if evidence_quote:
         quote_words = set(re.findall(r'\b\w{4,}\b', evidence_quote.lower()))
         for p in passages:
             p_words = set(re.findall(r'\b\w{4,}\b', p["text"].lower()))
             if quote_words and (len(quote_words & p_words) / len(quote_words)) >= 0.35:
                 evidence_source = p["source"]
+                matched_passage = p
                 break
 
     # 6. Consensus arbitration
@@ -640,6 +643,7 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
         final_verdict = "Contradicted"
         confidence = numeric_override[1]
         evidence_source = numeric_override[2]["source"]
+        matched_passage = numeric_override[2]
         evidence_quote = numeric_override[2]["text"][:250]
         arbitration_mode = "Numeric Exact Override"
 
@@ -722,6 +726,20 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
         reason = None
 
     src_name, src_url, src_domain = parse_source_details(evidence_source)
+
+    src_name = matched_passage.get("source_name") if matched_passage else None
+    src_url = matched_passage.get("source_url") if matched_passage else None
+    src_domain = matched_passage.get("source_domain") if matched_passage else None
+
+    # Fallback derivation if not directly on passage
+    if not src_name and evidence_source != "None":
+        src_name = evidence_source
+    if not src_url and evidence_source:
+        u_match = re.search(r'https?://[^\s\)]+', evidence_source)
+        if u_match:
+            src_url = u_match.group(0)
+            src_domain = urlparse(src_url).netloc
+            src_name = evidence_source.replace(f"({src_url})", "").strip()
 
     return {
         "claim_text": claim_text,

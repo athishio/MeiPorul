@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Header } from './components/Header';
+import { CrtMonitorHero } from './components/CrtMonitorHero';
+import { PipelineWalkthrough } from './components/PipelineWalkthrough';
+import { DocsSection } from './components/DocsSection';
+import { AboutSection } from './components/AboutSection';
 import { InputForm } from './components/InputForm';
 import { SummaryBar } from './components/SummaryBar';
 import { AnnotatedAnswer } from './components/AnnotatedAnswer';
@@ -8,7 +12,7 @@ import { ToolSchemaModal } from './components/ToolSchemaModal';
 import { ErrorFallback } from './components/ErrorFallback';
 import { VerifyResponse } from './types';
 import { VERIFY_ENDPOINT } from './config';
-import { ShieldCheck, Sparkles } from 'lucide-react';
+import { Terminal, Shield, Sparkles, Activity, Radio, ArrowUpRight } from 'lucide-react';
 
 // Import cached static demo response directly for guaranteed instant offline presentation
 import DEMO_FIXTURE from '../../demo/demo_response.json';
@@ -19,12 +23,14 @@ export function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSchemaModalOpen, setIsSchemaModalOpen] = useState<boolean>(false);
   const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
+  const [selectedClaimIndex, setSelectedClaimIndex] = useState<number | null>(null);
 
   // Load demo example handler
   const loadDemoExample = useCallback(() => {
     setIsLoading(false);
     setErrorMessage(null);
     setIsDemoMode(true);
+    setSelectedClaimIndex(0); // Focus first claim by default
     setResult(DEMO_FIXTURE as unknown as VerifyResponse);
   }, []);
 
@@ -40,6 +46,7 @@ export function App() {
     setIsLoading(true);
     setErrorMessage(null);
     setIsDemoMode(false);
+    setSelectedClaimIndex(null);
 
     try {
       const response = await fetch(VERIFY_ENDPOINT, {
@@ -57,6 +64,9 @@ export function App() {
 
       const data: VerifyResponse = await response.json();
       setResult(data);
+      if (data.claims && data.claims.length > 0) {
+        setSelectedClaimIndex(0);
+      }
     } catch (err: unknown) {
       console.error('Verification failed:', err);
       const msg = err instanceof Error ? err.message : 'Unknown network error occurred.';
@@ -66,146 +76,189 @@ export function App() {
     }
   };
 
+  const handleSelectClaim = (index: number) => {
+    setSelectedClaimIndex(index);
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    if (sectionId === 'hero') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const el = document.getElementById(sectionId);
+    if (el) {
+      // Account for the fixed header height
+      const yOffset = -70;
+      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
-      {/* Navigation Header */}
-      <Header onOpenSchemaModal={() => setIsSchemaModalOpen(true)} />
+    <div className="min-h-screen bg-[#16120f] text-[#cecdc9] flex flex-col font-body selection:bg-[#ed670f]/30 selection:text-white relative w-full max-w-full overflow-x-hidden">
+      {/* Fixed Navigation Header placed outside any transformed/animated container for true viewport lock */}
+      <Header
+        onOpenSchemaModal={() => setIsSchemaModalOpen(true)}
+        onNavigateToSection={scrollToSection}
+      />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        {/* Tirukkural Philosophy Hero Card */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-950/30 via-slate-900 to-emerald-950/30 border border-amber-500/25 p-5 shadow-2xl backdrop-blur">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-amber-400 text-xs font-semibold tracking-wider uppercase flex items-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                  திருக்குறள் • Kural 423
-                </span>
-                <span className="text-slate-600 text-xs">•</span>
-                <span className="text-xs text-slate-400">The Philosophical Inspiration of Meiporul</span>
-              </div>
-              
-              <div className="space-y-1">
-                <p className="text-base sm:text-lg font-serif text-amber-200/95 tracking-wide leading-relaxed">
-                  "எப்பொருள் யார்யார்வாய்க் கேட்பினும் அப்பொருள்
-                </p>
-                <p className="text-base sm:text-lg font-serif text-amber-300 font-semibold tracking-wide leading-relaxed">
-                  &nbsp;மெய்ப்பொருள் காண்ப தறிவு"
-                </p>
-              </div>
+      {/* CRT Scanline Overlay: subtle 4% opacity horizontal lines drifting slowly downward across whole page */}
+      <div className="crt-scanlines" aria-hidden="true" />
 
-              <p className="text-xs text-slate-300/90 italic pt-0.5">
-                "Whosoever says whatever, to discern the ultimate truth therein is wisdom." — Thiruvalluvar
-              </p>
-            </div>
-
-            <div className="hidden lg:flex flex-col items-end text-right justify-center border-l border-slate-800/80 pl-6 shrink-0">
-              <div className="text-xs text-slate-400 font-medium">Post-Hoc Fact-Verification</div>
-              <div className="text-sm font-bold text-emerald-400">Autonomous LLM Safeguard</div>
-              <div className="text-xs text-slate-400 mt-1 max-w-[230px]">
-                Checks every factual claim against evidence before the user ever sees it.
-              </div>
-            </div>
-          </div>
+      {/* Main Page Content with top padding offset for fixed header */}
+      <div className="flex-1 flex flex-col w-full max-w-full overflow-x-hidden pt-14 sm:pt-16">
+        {/* 1. HERO SECTION: CRT-Frame Monitor with Live OS Telemetry & Chatbot */}
+        <div id="hero">
+          <CrtMonitorHero
+            onGoToVerifyDashboard={() => scrollToSection('verify-tool')}
+          />
         </div>
 
-        {/* Pitch Banner */}
-        <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-cyan-950/40 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-lg">
-          <div className="space-y-0.5">
-            <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              Core Architecture & Flow
+        {/* 2. ARCHITECTURE / PIPELINE WALKTHROUGH SECTION */}
+        <PipelineWalkthrough />
+
+        {/* 3. INTERACTIVE DEMO / VERIFICATION SUITE SECTION */}
+        <section id="verify-tool" className="py-12 border-t border-[rgba(255,255,255,0.08)] bg-[#16120f]">
+          <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 space-y-6">
+            {/* Section Banner */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[rgba(255,255,255,0.1)] pb-4">
+              <div className="space-y-1">
+                <div className="text-xs font-mono font-bold text-[#ed670f] uppercase tracking-wider flex items-center gap-1.5">
+                  <Shield className="h-3.5 w-3.5 text-[#ed670f]" />
+                  <span>INTERACTIVE VERIFICATION SUITE // LIVE PIPELINE PROBE</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-display font-bold text-white tracking-tight">
+                  Verify Any AI-Generated Statement
+                </h2>
+              </div>
+              <div className="flex items-center gap-2 font-mono text-xs">
+                {isDemoMode && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[10px] bg-[#201c19] text-[#3ddc84] border border-[#3ddc84]/40">
+                    <Activity className="h-3 w-3 text-[#3ddc84] animate-pulse" />
+                    <span>CACHED_DEMO_ONLINE</span>
+                  </span>
+                )}
+              </div>
             </div>
-            <p className="text-sm font-medium text-slate-200">
-              "A fact-verification tool other LLMs can call before answering — it checks every claim against evidence, flags what's wrong, and rewrites it before the user ever sees it."
-            </p>
-          </div>
-          <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
-            {isDemoMode && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse">
-                <Sparkles className="h-3 w-3" />
-                Cached Demo Mode Active
-              </span>
+
+            {/* Terminal Input Buffer */}
+            <InputForm
+              onSubmit={handleVerify}
+              onLoadDemo={loadDemoExample}
+              isLoading={isLoading}
+            />
+
+            {/* Error Fallback State */}
+            {errorMessage && (
+              <ErrorFallback
+                errorMessage={errorMessage}
+                onRetry={() => setErrorMessage(null)}
+                onLoadDemo={loadDemoExample}
+              />
+            )}
+
+            {/* Verification Results View */}
+            {result && !errorMessage && (
+              <div className="space-y-6 pt-2">
+                {/* Telemetry Metrics Bar + Donut Chart & Sources Summary */}
+                <SummaryBar summary={result.summary} claims={result.claims} />
+
+                {/* Centerpiece Annotated Answer View */}
+                <AnnotatedAnswer
+                  annotatedText={result.annotated_answer}
+                  claims={result.claims}
+                  selectedClaimIndex={selectedClaimIndex}
+                  onSelectClaim={handleSelectClaim}
+                />
+
+                {/* Atomic Claims List & Evidence Audit */}
+                <ClaimsList
+                  claims={result.claims}
+                  selectedClaimIndex={selectedClaimIndex}
+                  onSelectClaim={handleSelectClaim}
+                />
+              </div>
+            )}
+
+            {/* Empty State: NO SIGNAL Treatment */}
+            {!result && !isLoading && !errorMessage && (
+              <div className="py-16 text-center border border-[rgba(255,255,255,0.12)] bg-[#201c19] space-y-4">
+                <div className="h-14 w-14 bg-[#16120f] border border-[rgba(255,255,255,0.15)] flex items-center justify-center mx-auto text-[#9f9b92]">
+                  <Radio className="h-7 w-7 text-[#ed670f] animate-pulse" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-[17px] font-bold font-display text-white uppercase tracking-tight">
+                    [NO SIGNAL // SYSTEM IDLE]
+                  </h3>
+                  <p className="text-xs font-mono text-[#9f9b92] max-w-md mx-auto">
+                    Submit text in the input buffer above or click below to inspect pre-computed verification telemetry.
+                  </p>
+                </div>
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    onClick={loadDemoExample}
+                    className="inline-flex items-center gap-2 px-5 py-2 text-xs font-mono font-medium text-[#16120f] bg-[#ed670f] hover:bg-[#f4b084] transition-colors"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span>&gt; LOAD_DNA_DEMO_SIGNAL</span>
+                  </button>
+                </div>
+              </div>
             )}
           </div>
+        </section>
+
+        {/* 4. RESEARCH / ABOUT SECTION */}
+        <AboutSection />
+
+        {/* 5. VISIBLE DEVELOPER DOCUMENTATION SECTION */}
+        <DocsSection />
+
+        {/* 6. OVERSIZED MEIKURAL WATERMARK (Strictly at the end after docs, zero subtext) */}
+        <div className="py-14 sm:py-20 flex justify-center items-center select-none pointer-events-none overflow-hidden w-full">
+          <div
+            className="font-display font-bold text-white text-center tracking-[-0.75px] uppercase leading-none opacity-10 select-none"
+            style={{ fontSize: 'clamp(72px, 14vw, 220px)' }}
+          >
+            MEIKURAL
+          </div>
         </div>
 
-        {/* Input Card */}
-        <InputForm
-          onSubmit={handleVerify}
-          onLoadDemo={loadDemoExample}
-          isLoading={isLoading}
-        />
-
-        {/* Error Fallback State */}
-        {errorMessage && (
-          <ErrorFallback
-            errorMessage={errorMessage}
-            onRetry={() => {
-              setErrorMessage(null);
-            }}
-            onLoadDemo={loadDemoExample}
-          />
-        )}
-
-        {/* Results Section */}
-        {result && !errorMessage && (
-          <div className="space-y-6 animate-fade-in">
-            {/* Summary Metrics Bar */}
-            <SummaryBar summary={result.summary} />
-
-            {/* Inline Color-Coded Annotated Answer */}
-            <AnnotatedAnswer annotatedText={result.annotated_answer} />
-
-            {/* Claims Cards & Evidence Snippets + Self-Correction Loop */}
-            <ClaimsList claims={result.claims} />
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!result && !isLoading && !errorMessage && (
-          <div className="py-16 text-center border border-dashed border-slate-800 rounded-2xl bg-slate-900/30">
-            <div className="h-14 w-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto mb-3 text-slate-500">
-              <ShieldCheck className="h-8 w-8 text-emerald-400/60" />
+        {/* Clean CRT Footer */}
+        <footer className="border-t border-[rgba(255,255,255,0.1)] bg-[#201c19] py-4 text-xs font-mono text-[#9f9b92]">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Terminal className="h-3.5 w-3.5 text-[#ed670f]" />
+              <span>MEIPORUL (மெய்பொருள்) // SIGNAL VERIFICATION ENGINE v1.0.0</span>
             </div>
-            <h3 className="text-base font-semibold text-slate-300 mb-1">
-              No Claims Verified Yet
-            </h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto mb-4">
-              Enter an answer above and click <strong>"Verify Claims"</strong>, or click <strong>"Load Demo Example"</strong> to see a live demonstration of Meiporul's self-correcting verification loop.
-            </p>
-            <button
-              onClick={loadDemoExample}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800 hover:bg-emerald-900/60 transition-colors"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Load DNA Demo Example</span>
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => scrollToSection('docs')}
+                className="hover:text-white hover-chromatic transition-colors"
+              >
+                [DOCS_API]
+              </button>
+              <a
+                href="https://github.com/athishio/MeiPorul.git"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-white hover-chromatic flex items-center gap-1 transition-colors"
+              >
+                <span>GITHUB_REPO</span>
+                <ArrowUpRight className="h-3 w-3" />
+              </a>
+            </div>
           </div>
-        )}
-      </main>
+        </footer>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 bg-slate-950 py-4 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>Meiporul (மெய்பொருள்) — Fact-Verification Engine for LLMs</span>
-          <div className="flex items-center gap-4">
-            <button onClick={() => setIsSchemaModalOpen(true)} className="hover:text-slate-300">
-              Tool Schema
-            </button>
-            <a href="https://github.com/athishio/MeiPorul.git" target="_blank" rel="noreferrer" className="hover:text-slate-300">
-              GitHub Repository
-            </a>
-          </div>
-        </div>
-      </footer>
-
-      {/* Tool Schema Modal */}
-      <ToolSchemaModal
-        isOpen={isSchemaModalOpen}
-        onClose={() => setIsSchemaModalOpen(false)}
-      />
+        {/* Tool Schema Modal (Top-Aligned) */}
+        <ToolSchemaModal
+          isOpen={isSchemaModalOpen}
+          onClose={() => setIsSchemaModalOpen(false)}
+        />
+      </div>
     </div>
   );
 }

@@ -88,6 +88,9 @@ def fetch_wikipedia_passages(query: str, max_results: int = 3) -> List[Dict[str,
                         passages.append({
                             "text": f"{title}: {snippet}",
                             "source": f"Wikipedia: {title} ({page_url})",
+                            "source_name": f"Wikipedia: {title}",
+                            "source_url": page_url,
+                            "source_domain": "en.wikipedia.org",
                             "source_type": "wikipedia"
                         })
     except Exception as e:
@@ -103,6 +106,7 @@ def fetch_tavily_passages(query: str, max_results: int = 2) -> List[Dict[str, An
         return passages
 
     try:
+        from urllib.parse import urlparse
         with httpx.Client(timeout=8.0) as client:
             resp = client.post(
                 "https://api.tavily.com/search",
@@ -120,10 +124,14 @@ def fetch_tavily_passages(query: str, max_results: int = 2) -> List[Dict[str, An
                     content = result.get("content", "")
                     url = result.get("url", "")
                     title = result.get("title", "Web Source")
+                    domain = urlparse(url).netloc if url else None
                     if content:
                         passages.append({
                             "text": content[:400],
                             "source": f"{title} ({url})",
+                            "source_name": title,
+                            "source_url": url,
+                            "source_domain": domain,
                             "source_type": "tavily"
                         })
     except Exception as e:
