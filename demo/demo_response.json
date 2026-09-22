@@ -1,0 +1,54 @@
+{
+  "question": "Tell me about the discovery and structure of DNA, including key contributors and dates.",
+  "answer": "The double helix structure of DNA was discovered in 1953 by James Watson and Francis Crick. Rosalind Franklin's Photo 51 was critical in determining the helical structure, though she was awarded the Nobel Prize in 1962 alongside them. The human genome contains approximately 3.2 billion base pairs.",
+  "claims": [
+    {
+      "claim_text": "The double helix structure of DNA was discovered in 1953 by James Watson and Francis Crick.",
+      "verdict": "Supported",
+      "evidence_source": "Wikipedia: DNA",
+      "evidence_snippet": "In 1953, James Watson and Francis Crick suggested what is now accepted as the first correct double-helix model of DNA structure in the journal Nature.",
+      "confidence": 0.98,
+      "rewritten_claim": null
+    },
+    {
+      "claim_text": "Rosalind Franklin's Photo 51 was critical in determining the helical structure.",
+      "verdict": "Supported",
+      "evidence_source": "Wikipedia: Photo 51",
+      "evidence_snippet": "Photo 51 is an X-ray diffraction image of paracrystalline gel taken by Raymond Gosling, a PhD student supervised by Rosalind Franklin in May 1952, which was critical evidence in identifying the structure of DNA.",
+      "confidence": 0.95,
+      "rewritten_claim": null
+    },
+    {
+      "claim_text": "Rosalind Franklin was awarded the Nobel Prize in 1962 alongside James Watson and Francis Crick.",
+      "verdict": "Contradicted",
+      "evidence_source": "The Nobel Prize Official Archives",
+      "evidence_snippet": "The Nobel Prize in Physiology or Medicine 1962 was awarded jointly to Francis Harry Compton Crick, James Dewey Watson and Maurice Hugh Frederick Wilkins. Rosalind Franklin died in 1958 and the Nobel Committee does not award posthumous prizes.",
+      "confidence": 0.96,
+      "rewritten_claim": "Rosalind Franklin was not awarded the 1962 Nobel Prize because she died in 1958, and the Nobel Prize is not awarded posthumously; the prize was awarded jointly to Watson, Crick, and Maurice Wilkins."
+    },
+    {
+      "claim_text": "The human genome contains approximately 3.2 billion base pairs.",
+      "verdict": "Supported",
+      "evidence_source": "National Human Genome Research Institute (NHGRI)",
+      "evidence_snippet": "The human genome is made up of approximately 3.1 to 3.2 billion base pairs of DNA packaged into 23 pairs of chromosomes.",
+      "confidence": 0.94,
+      "rewritten_claim": null
+    },
+    {
+      "claim_text": "Francis Crick first conceived the central dogma of molecular biology during a dream in Cambridge.",
+      "verdict": "Not Enough Info",
+      "evidence_source": "Wikipedia: Central dogma of molecular biology",
+      "evidence_snippet": "The dogma was first stated by Francis Crick in 1957, then published in 1958. Historical records do not substantiate the claim that it was conceived during a dream.",
+      "confidence": 0.65,
+      "rewritten_claim": null
+    }
+  ],
+  "annotated_answer": "The double helix structure of DNA was discovered in 1953 by James Watson and Francis Crick [Supported]. Rosalind Franklin's Photo 51 was critical in determining the helical structure [Supported], though she was awarded the Nobel Prize in 1962 alongside them [Contradicted]. The human genome contains approximately 3.2 billion base pairs [Supported]. Francis Crick first conceived the central dogma of molecular biology during a dream in Cambridge [Not Enough Info].",
+  "summary": {
+    "total_claims": 5,
+    "percent_supported": 60.0,
+    "percent_contradicted": 20.0,
+    "percent_not_enough_info": 20.0,
+    "avg_confidence": 0.896
+  }
+}
