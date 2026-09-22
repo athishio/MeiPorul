@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down Meiporul Verification Backend.")
 
 app = FastAPI(
-    title="Meiporul (மெய்ப்பொருள்) Verification API",
+    title="Meiporul (மெய்பொருள்) Verification API",
     description="A fact-verification tool other LLMs can call before answering — it checks every claim against evidence, flags what's wrong, and rewrites it before the user ever sees it.",
     version="0.1.0",
     lifespan=lifespan

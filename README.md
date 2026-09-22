@@ -1,4 +1,4 @@
-# Meiporul (மெய்ப்பொருள்)
+# Meiporul (மெய்பொருள்)
 
 > *"A fact-verification tool other LLMs can call before answering — it checks every claim against evidence, flags what's wrong, and rewrites it before the user ever sees it."*
 
@@ -11,7 +11,7 @@
 
 ## 🏛️ What is Meiporul?
 
-In Tamil philosophy, **மெய்ப்பொருள் (Meiporul)** means *"the ultimate truth / true substance"* (from the classic Tirukkural: *"Whosoever says whatever, to discern the truth therein is wisdom"*).
+In Tamil philosophy, **மெய்பொருள் (Meiporul)** means *"the ultimate truth / true substance"* (from the classic Tirukkural: *"Whosoever says whatever, to discern the truth therein is wisdom"*).
 
 **Meiporul** is an autonomous post-hoc fact-checking and self-correcting tool designed to sit between LLM generation and human delivery. Instead of interrupting generation or hallucinating unchecked, downstream agents pass draft answers to Meiporul, which:
 1. Decomposes statements into atomic verifiable claims (FActScore-style).

@@ -19,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSchemaModal }) => {
               <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                 Meiporul
                 <span className="text-xs font-normal text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-2 py-0.5 rounded-full">
-                  மெய்ப்பொருள்
+                  மெய்பொருள்
                 </span>
               </h1>
               <span className="text-xs text-slate-400 hidden md:inline">|</span>

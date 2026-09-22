@@ -1,4 +1,4 @@
-# Meiporul (மெய்ப்பொருள்) — Tool Interface
+# Meiporul (மெய்பொருள்) — Tool Interface
 
 > **"A fact-verification tool other LLMs can call before answering — it checks every claim against evidence, flags what's wrong, and rewrites it before the user ever sees it."**
 
