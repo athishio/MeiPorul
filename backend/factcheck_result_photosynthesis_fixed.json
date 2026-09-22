@@ -5,9 +5,10 @@
         "claim_text": "Photosynthesis is the process by which plants convert sunlight into chemical energy.",
         "verdict": "Supported",
         "evidence_source": "The process of photosynthesis - Student Academic Success (https://www.monash.edu/student-academic-success/biology/photosynthesis/the-process-of-photosynthesis)",
-        "evidence_snippet": "Photosynthesis is the process by which green plants, algae, and some bacteria convert light energy into chemical energy.",
+        "evidence_snippet": "Photosynthesis is the process plants use to convert sunlight into chemical energy.",
         "confidence": 0.92,
-        "rewritten_claim": null
+        "rewritten_claim": null,
+        "reason": null
       },
       {
         "claim_text": "Jan Ingenhousz characterized photosynthesis in detail in 1779.",
@@ -15,7 +16,8 @@
         "evidence_source": "Jan Ingenhousz (https://physicstoday.aip.org/news/jan-ingenhousz)",
         "evidence_snippet": "Ingenhousz's scientific interests later shifted towards botany and physiology, leading to his seminal publication in 1779, \\Experiments upon Vegetables\\, where he detailed the process of photosynthesis.",
         "confidence": 0.87,
-        "rewritten_claim": null
+        "rewritten_claim": null,
+        "reason": null
       },
       {
         "claim_text": "Photosynthesis occurs primarily in the chloroplasts of plant cells.",
@@ -23,55 +25,80 @@
         "evidence_source": "The process of photosynthesis - Student Academic Success (https://www.monash.edu/student-academic-success/biology/photosynthesis/the-process-of-photosynthesis)",
         "evidence_snippet": "It mainly occurs in the chloroplasts of plant cells.",
         "confidence": 0.91,
-        "rewritten_claim": null
+        "rewritten_claim": null,
+        "reason": null
       },
       {
-        "claim_text": "Chlorophyll is a pigment used in photosynthesis to absorb light.",
+        "claim_text": "Photosynthesis uses chlorophyll to absorb light.",
         "verdict": "Supported",
         "evidence_source": "Photosynthetic Cells - Photosynthesis, Chloroplast (https://www.nature.com/scitable/topicpage/photosynthetic-cells-14025371)",
         "evidence_snippet": "Chlorophyll, the primary pigment used in photosynthesis, reflects green light and absorbs red and blue light most strongly.",
         "confidence": 0.91,
-        "rewritten_claim": null
+        "rewritten_claim": null,
+        "reason": null
       },
       {
-        "claim_text": "Water and carbon dioxide are the primary inputs of photosynthesis.",
+        "claim_text": "Water is a primary input of photosynthesis.",
         "verdict": "Supported",
         "evidence_source": "What Are the Inputs and Outputs of Photosynthesis? (https://www.spider-farmer.com/blog/inputs-and-outputs-of-photosynthesis)",
-        "evidence_snippet": "In short, the inputs of photosynthesis are carbon dioxide, water, and light energy - such as sunlight",
-        "confidence": 0.92,
-        "rewritten_claim": null
+        "evidence_snippet": "Water is an essential input into the photosynthesis reaction",
+        "confidence": 0.9,
+        "rewritten_claim": null,
+        "reason": null
       },
       {
-        "claim_text": "Oxygen and glucose are the outputs of photosynthesis.",
+        "claim_text": "Carbon dioxide is a primary input of photosynthesis.",
         "verdict": "Supported",
-        "evidence_source": "What Are the Inputs and Outputs of Photosynthesis? (https://www.spider-farmer.com/blog/inputs-and-outputs-of-photosynthesis)",
-        "evidence_snippet": "The outputs of photosynthesis are glucose and oxygen.",
+        "evidence_source": "Wikipedia: Photosynthesis (https://en.wikipedia.org/wiki/Photosynthesis)",
+        "evidence_snippet": "Carbon dioxide is converted into sugars in a process called carbon fixation; photosynthesis captures energy from sunlight to convert carbon dioxide into",
         "confidence": 0.91,
-        "rewritten_claim": null
+        "rewritten_claim": null,
+        "reason": null
+      },
+      {
+        "claim_text": "Oxygen is an output of photosynthesis.",
+        "verdict": "Supported",
+        "evidence_source": "Understanding the Inputs and Outputs of Photosynthesis - Mars Hydro (https://www.mars-hydro.com/info/post/inputs-and-outputs-of-photosynthesis)",
+        "evidence_snippet": "The term photosynthesis usually refers to oxygenic photosynthesis, a process that releases oxygen as a byproduct of water splitting",
+        "confidence": 0.91,
+        "rewritten_claim": null,
+        "reason": null
+      },
+      {
+        "claim_text": "Glucose is an output of photosynthesis.",
+        "verdict": "Supported",
+        "evidence_source": "Inputs and Outputs of Photosynthesis | Overview & Process (https://study.com/academy/lesson/matter-energy-changes-during-photosynthesis.html)",
+        "evidence_snippet": "Glucose is the primary product of photosynthesis.",
+        "confidence": 0.92,
+        "rewritten_claim": null,
+        "reason": null
       },
       {
         "claim_text": "Charles Darwin fully explained photosynthesis in 1859.",
         "verdict": "Contradicted",
-        "evidence_source": "#OnThisDay in 1859, Charles Darwin revolutionized ... (https://www.facebook.com/theNASciences/posts/onthisday-in-1859-charles-darwin-revolutionized-our-understanding-of-life-on-ear/1285203466973051)",
-        "evidence_snippet": "#OnThisDay in 1859, Charles Darwin revolutionized our understanding of life on Earth with the publication of \"On the Origin of Species.\"",
+        "evidence_source": "Wikipedia: Evolution as fact and theory (https://en.wikipedia.org/wiki/Evolution_as_fact_and_theory)",
+        "evidence_snippet": "also refer to explanatory theories (such as Charles Darwin's theory of natural selection) which explain the mechanisms of evolution.",
         "confidence": 0.9,
-        "rewritten_claim": "In 1859, Charles Darwin published 'On the Origin of Species,' which revolutionized the understanding of life on Earth."
+        "rewritten_claim": null,
+        "reason": null
       },
       {
-        "claim_text": "In 2023, researchers at MIT announced an artificial photosynthesis system.",
+        "claim_text": "Researchers at MIT announced an artificial photosynthesis system in 2023.",
         "verdict": "Not Enough Info",
-        "evidence_source": "Scientists built a battery-free device that turns sunlight into ... (https://www.sciencedaily.com/releases/2026/06/260611024601.htm)",
-        "evidence_snippet": "Scientists have developed an artificial photosynthesis system that essentially regulates itself",
-        "confidence": 0.71,
-        "rewritten_claim": null
+        "evidence_source": "Artificial Photosynthesis System Offers Promising Solution for Carbon Dioxide Reduction (https://www.azom.com/news.aspx?newsID=63678)",
+        "evidence_snippet": "researchers at the University of Michigan have developed an artificial photosynthesis system",
+        "confidence": 0.62,
+        "rewritten_claim": null,
+        "reason": "no_matching_evidence"
       },
       {
-        "claim_text": "The artificial photosynthesis system developed by MIT researchers in 2023 achieved 15% efficiency.",
+        "claim_text": "The artificial photosynthesis system developed by MIT researchers achieved 15% efficiency.",
         "verdict": "Not Enough Info",
-        "evidence_source": "Wikipedia: Bionic Leaf (https://en.wikipedia.org/wiki/Bionic_Leaf)",
-        "evidence_snippet": "In 2009 at MIT, Daniel Nocera's lab first developed the \"artificial leaf\", a device made from silicon and an anode",
+        "evidence_source": "'Artificial leaf' makes fuel from sunlight (https://news.mit.edu/2011/artificial-leaf-0930)",
+        "evidence_snippet": "Researchers led by MIT professor Daniel Nocera have produced something they\u2019re calling an \u201cartificial leaf\u201d",
         "confidence": 0.72,
-        "rewritten_claim": null
+        "rewritten_claim": null,
+        "reason": "no_matching_evidence"
       },
       {
         "claim_text": "The average efficiency of natural photosynthesis in most plants is around 1-2%.",
@@ -79,23 +106,26 @@
         "evidence_source": "Photosynthetic efficiency - Wikipedia (https://en.wikipedia.org/wiki/Photosynthetic_efficiency)",
         "evidence_snippet": "| Typical crop plants | 1\u20132% |",
         "confidence": 0.91,
-        "rewritten_claim": null
+        "rewritten_claim": null,
+        "reason": null
       },
       {
         "claim_text": "The Amazon rainforest produces roughly 20% of the world's oxygen through photosynthesis.",
-        "verdict": "Not Enough Info",
+        "verdict": "Contradicted",
         "evidence_source": "Why the Amazon doesn't really produce 20% of the world's ... (https://www.nationalgeographic.com/environment/article/why-amazon-doesnt-produce-20-percent-worlds-oxygen)",
-        "evidence_snippet": "In fact, it\u2019s a gross overestimate. The Amazon\u2019s net contribution to the oxygen we breathe likely hovers around zero.",
-        "confidence": 0.59,
-        "rewritten_claim": null
+        "evidence_snippet": "The Amazon rainforest is often called the \u201clungs of the Earth\u201d and credited with producing some 20 percent of the world\u2019s oxygen. But that\u2019s often a repeated, yet misleading claim. In fact, it\u2019s a gross overestimate. The Amazon\u2019s net contribution to",
+        "confidence": 0.9,
+        "rewritten_claim": "The Amazon rainforest contributes 20% of the oxygen produced on land via photosynthesis.",
+        "reason": null
       },
       {
         "claim_text": "Google released Gemini 3.5 Flash in May 2026.",
-        "verdict": "Contradicted",
+        "verdict": "Not Enough Info",
         "evidence_source": "Wikipedia: Google Gemini (https://en.wikipedia.org/wiki/Google_Gemini)",
         "evidence_snippet": "Google CEO Sundar Pichai introduces Gemini 3.5 Flash at Google I/O 2026.",
-        "confidence": 0.91,
-        "rewritten_claim": "Google introduced Gemini 3.5 Flash at the Google I/O 2026 developers conference."
+        "confidence": 0.58,
+        "rewritten_claim": null,
+        "reason": "conflicting_signals"
       },
       {
         "claim_text": "Gemini 3.5 Flash supports structured JSON output.",
@@ -103,15 +133,16 @@
         "evidence_source": "Improving Structured Outputs in the Gemini API (https://blog.google/innovation-and-ai/technology/developers-tools/gemini-api-structured-outputs)",
         "evidence_snippet": "We\u2019ve now added support for JSON Schema to all actively supported Gemini models.",
         "confidence": 0.9,
-        "rewritten_claim": null
+        "rewritten_claim": null,
+        "reason": null
       }
     ],
-    "annotated_answer": "Photosynthesis is the process by which plants convert sunlight into chemical energy. [Supported] It was first characterized in detail by Jan Ingenhousz in 1779. The process occurs primarily in the chloroplasts of plant cells, using a pigment called chlorophyll to absorb light. Water and carbon dioxide are the primary inputs, and oxygen and glucose are the outputs. Photosynthesis was first fully explained by Charles Darwin in 1859. In 2023, researchers at MIT announced a breakthrough artificial photosynthesis system that achieved 15% efficiency, more than double the average efficiency of natural photosynthesis in most plants (around 1-2%). The Amazon rainforest produces roughly 20% of the world's oxygen through photosynthesis. [Not Enough Info] Gemini 3.5 Flash was released by Google in May 2026 and supports structured JSON output.",
+    "annotated_answer": "Photosynthesis is the process by which plants convert sunlight into chemical energy. [Supported] It was first characterized in detail by Jan Ingenhousz in 1779. The process occurs primarily in the chloroplasts of plant cells, using a pigment called chlorophyll to absorb light. Water and carbon dioxide are the primary inputs, and oxygen and glucose are the outputs. Photosynthesis was first fully explained by Charles Darwin in 1859. In 2023, researchers at MIT announced a breakthrough artificial photosynthesis system that achieved 15% efficiency, more than double the average efficiency of natural photosynthesis in most plants (around 1-2%). The Amazon rainforest produces roughly 20% of the world's oxygen through photosynthesis. [Contradicted] Gemini 3.5 Flash was released by Google in May 2026 and supports structured JSON output.",
     "summary": {
-      "total_claims": 13,
-      "percent_supported": 61.5,
-      "percent_contradicted": 15.4,
-      "percent_not_enough_info": 23.1,
+      "total_claims": 15,
+      "percent_supported": 66.7,
+      "percent_contradicted": 13.3,
+      "percent_not_enough_info": 20.0,
       "avg_confidence": 0.852
     }
   },
@@ -150,7 +181,7 @@
       "confidence": 0.92,
       "arbitration_mode": "Dual-Signal Consensus (Signal A and B Agree)",
       "evidence_source": "The process of photosynthesis - Student Academic Success (https://www.monash.edu/student-academic-success/biology/photosynthesis/the-process-of-photosynthesis)",
-      "evidence_snippet": "Photosynthesis is the process by which green plants, algae, and some bacteria convert light energy into chemical energy.",
+      "evidence_snippet": "Photosynthesis is the process plants use to convert sunlight into chemical energy.",
       "rewritten_claim": null,
       "reverify_status": "Skipped (Verdict is not Contradicted)"
     },
@@ -232,33 +263,33 @@
     },
     {
       "index": 4,
-      "claim_text": "Chlorophyll is a pigment used in photosynthesis to absorb light.",
+      "claim_text": "Photosynthesis uses chlorophyll to absorb light.",
       "is_numeric": false,
       "source_sentence": "The process occurs primarily in the chloroplasts of plant cells, using a pigment called chlorophyll to absorb light.",
       "routing": "Routed to Wikipedia first (encyclopedic definition/historical fact), supplemented by Tavily",
       "passages": [
         {
+          "text": "Anoxygenic photosynthesis: counterpart that predominantly uses chlorophyll, this type of photosynthesis uses the bacteriochlorophyll (BChl) to utilize light as an energy source. A precursor",
+          "source": "Wikipedia: Anoxygenic photosynthesis (https://en.wikipedia.org/wiki/Anoxygenic_photosynthesis)",
+          "source_type": "wikipedia",
+          "similarity_score": 0.388
+        },
+        {
           "text": "Photosynthetic cells contain special pigments that absorb light energy. Different pigments respond to different wavelengths of visible light. Chlorophyll, the primary pigment used in photosynthesis, reflects green light and absorbs red and blue light most strongly. In plants, photosynthesis takes place in chloroplasts, which contain the chlorophyll. Chloroplasts are surrounded by a double membrane",
           "source": "Photosynthetic Cells - Photosynthesis, Chloroplast (https://www.nature.com/scitable/topicpage/photosynthetic-cells-14025371)",
           "source_type": "tavily",
-          "similarity_score": 0.391
+          "similarity_score": 0.281
         },
         {
-          "text": "Chlorophyll a: Chlorophyll a is a specific form of chlorophyll used in oxygenic photosynthesis. It absorbs most energy from wavelengths of violet-blue and orange-red",
-          "source": "Wikipedia: Chlorophyll a (https://en.wikipedia.org/wiki/Chlorophyll_a)",
+          "text": "Photosynthesis: anoxygenic photosynthesis, where the simpler photopigment retinal and its microbial rhodopsin derivatives are used to absorb green light and produce",
+          "source": "Wikipedia: Photosynthesis (https://en.wikipedia.org/wiki/Photosynthesis)",
           "source_type": "wikipedia",
-          "similarity_score": 0.3
-        },
-        {
-          "text": "Chlorophyll is any of several related photochemical catalysts and green pigments found in cyanobacteria and in the chloroplasts of algae and plants. Its name is derived from the Greek words \u03c7\u03bb\u03c9\u03c1\u03cc\u03c2 (khloros, \"pale green\") and \u03c6\u03cd\u03bb\u03bb\u03bf\u03bd (phyllon, \"leaf\"). Chlorophyll allows plants to absorb energy from light. Those pigments are involved in oxygenic photosynthesis, as opposed to bacteriochlorophylls, wh",
-          "source": "Chlorophyll (https://en.wikipedia.org/wiki/Chlorophyll)",
-          "source_type": "tavily",
-          "similarity_score": 0.28
+          "similarity_score": 0.27
         }
       ],
       "signal_b": {
         "verdict": "Supported",
-        "score": 0.9933
+        "score": 0.9972
       },
       "final_verdict": "Supported",
       "confidence": 0.91,
@@ -270,82 +301,158 @@
     },
     {
       "index": 5,
-      "claim_text": "Water and carbon dioxide are the primary inputs of photosynthesis.",
+      "claim_text": "Water is a primary input of photosynthesis.",
       "is_numeric": false,
       "source_sentence": "Water and carbon dioxide are the primary inputs, and oxygen and glucose are the outputs.",
       "routing": "Routed to Wikipedia first (encyclopedic definition/historical fact), supplemented by Tavily",
       "passages": [
         {
-          "text": "Although some of you may have a basic understanding of the input and output components during the photosynthesis process, which can be written as follows:\n\ncarbon dioxide + water + sunlight = glucose + oxygen\n\nIn short, the inputs of photosynthesis are carbon dioxide, water, and light energy - such as sunlight- while the main outputs of photosynthesis are glucose and oxygen. [...] The two inputs o",
+          "text": "Water is another vital input for photosynthesis. Plant roots absorb water from the soil, facilitated by specialized structures such as root hairs. These thin, elongated projections increase the surface area for water absorption, enhancing the plant's ability to uptake moisture from the soil.\n\nRole of Water in Photosynthesis and Transport\n\nWater serves two key functions in photosynthesis: [...] In ",
           "source": "What Are the Inputs and Outputs of Photosynthesis? (https://www.spider-farmer.com/blog/inputs-and-outputs-of-photosynthesis)",
           "source_type": "tavily",
-          "similarity_score": 0.52
+          "similarity_score": 0.275
         },
         {
-          "text": "Carbon cycle: methane. Carbon dioxide is removed from the atmosphere primarily through photosynthesis and enters the terrestrial and oceanic biospheres. Carbon dioxide also",
-          "source": "Wikipedia: Carbon cycle (https://en.wikipedia.org/wiki/Carbon_cycle)",
-          "source_type": "wikipedia",
-          "similarity_score": 0.358
-        },
-        {
-          "text": "Photosynthesis: oxidized to produce carbon dioxide and water, and to release chemical energy to drive the organism&#039;s metabolism. Photosynthesis and cellular respiration",
+          "text": "Photosynthesis: metabolism. The term photosynthesis usually refers to oxygenic photosynthesis, a process that releases oxygen as a byproduct of water splitting. Photosynthetic",
           "source": "Wikipedia: Photosynthesis (https://en.wikipedia.org/wiki/Photosynthesis)",
           "source_type": "wikipedia",
-          "similarity_score": 0.329
+          "similarity_score": 0.225
+        },
+        {
+          "text": "Water is an essential input into the photosynthesis reaction (Figure 4.1.2), which converts sunlight, carbon dioxide and water into carbohydrates that we and other animals can eat for energy. Also, as the water vapor moves out of the plant's stomata via transpiration (Figure 4.1.2), the carbon dioxide can enter the plant. The transpiration of water vapor out of the open stomata allows carbon dioxi",
+          "source": "Water is Essential for Food Production (https://serc.carleton.edu/integrate/teaching_materials/food_supply/student_materials/1090)",
+          "source_type": "tavily",
+          "similarity_score": 0.224
         }
       ],
       "signal_b": {
         "verdict": "Supported",
-        "score": 0.9836
+        "score": 0.9919
       },
       "final_verdict": "Supported",
-      "confidence": 0.92,
+      "confidence": 0.9,
       "arbitration_mode": "Dual-Signal Consensus (Signal A and B Agree)",
       "evidence_source": "What Are the Inputs and Outputs of Photosynthesis? (https://www.spider-farmer.com/blog/inputs-and-outputs-of-photosynthesis)",
-      "evidence_snippet": "In short, the inputs of photosynthesis are carbon dioxide, water, and light energy - such as sunlight",
+      "evidence_snippet": "Water is an essential input into the photosynthesis reaction",
       "rewritten_claim": null,
       "reverify_status": "Skipped (Verdict is not Contradicted)"
     },
     {
       "index": 6,
-      "claim_text": "Oxygen and glucose are the outputs of photosynthesis.",
+      "claim_text": "Carbon dioxide is a primary input of photosynthesis.",
       "is_numeric": false,
       "source_sentence": "Water and carbon dioxide are the primary inputs, and oxygen and glucose are the outputs.",
       "routing": "Routed to Wikipedia first (encyclopedic definition/historical fact), supplemented by Tavily",
       "passages": [
         {
-          "text": "What does photosynthesis produce? In this part, we\u2019ll explore the two outputs of photosynthesis - glucose and oxygen.\n\n### Glucose (C6H12O6)\n\nProduction of Glucose as the Primary Product [...] Although some of you may have a basic understanding of the input and output components during the photosynthesis process, which can be written as follows:\n\ncarbon dioxide + water + sunlight = glucose + oxyge",
-          "source": "What Are the Inputs and Outputs of Photosynthesis? (https://www.spider-farmer.com/blog/inputs-and-outputs-of-photosynthesis)",
-          "source_type": "tavily",
-          "similarity_score": 0.43
-        },
-        {
-          "text": "The outputs of photosynthesis are glucose and oxygen. Glucose is a sugar used to create structures for the cell and make energy. Oxygen is released into the environment and can also be used as a reactant to make energy with glucose.\n\nAn error occurred trying to load this video.\n\nTry refreshing the page, or contact customer support.\n\n## You must cCreate an account to continue watching\n\n### Register",
-          "source": "Inputs and Outputs of Photosynthesis | Overview & Process (https://study.com/academy/lesson/matter-energy-changes-during-photosynthesis.html)",
-          "source_type": "tavily",
-          "similarity_score": 0.369
-        },
-        {
-          "text": "Photosynthesis: fuel their metabolism. The term photosynthesis usually refers to oxygenic photosynthesis, a process that releases oxygen as a byproduct of water splitting",
+          "text": "Photosynthesis: Carbon dioxide is converted into sugars in a process called carbon fixation; photosynthesis captures energy from sunlight to convert carbon dioxide into",
           "source": "Wikipedia: Photosynthesis (https://en.wikipedia.org/wiki/Photosynthesis)",
           "source_type": "wikipedia",
-          "similarity_score": 0.226
+          "similarity_score": 0.404
+        },
+        {
+          "text": "Carbon cycle: methane. Carbon dioxide is removed from the atmosphere primarily through photosynthesis and enters the terrestrial and oceanic biospheres. Carbon dioxide also",
+          "source": "Wikipedia: Carbon cycle (https://en.wikipedia.org/wiki/Carbon_cycle)",
+          "source_type": "wikipedia",
+          "similarity_score": 0.361
+        },
+        {
+          "text": "1.   Sugar (Glucose): The primary product of photosynthesis, it serves as food and energy for the plant and can be stored for later use.\n\n2.   Oxygen: This is released as a byproduct into the atmosphere, which is essential for the respiration of most living organisms. [...] Photosynthesis is the process by which plants, algae, and certain bacteria convert light energy into chemical energy, specifi",
+          "source": "[FREE] Classify each of the following items as an input or output of photosynthesis.\n\n- light\n- carbon dioxide\n- - brainly.com (https://brainly.com/question/52299999)",
+          "source_type": "tavily",
+          "similarity_score": 0.189
         }
       ],
       "signal_b": {
         "verdict": "Supported",
-        "score": 0.9982
+        "score": 0.9912
       },
       "final_verdict": "Supported",
       "confidence": 0.91,
       "arbitration_mode": "Dual-Signal Consensus (Signal A and B Agree)",
-      "evidence_source": "What Are the Inputs and Outputs of Photosynthesis? (https://www.spider-farmer.com/blog/inputs-and-outputs-of-photosynthesis)",
-      "evidence_snippet": "The outputs of photosynthesis are glucose and oxygen.",
+      "evidence_source": "Wikipedia: Photosynthesis (https://en.wikipedia.org/wiki/Photosynthesis)",
+      "evidence_snippet": "Carbon dioxide is converted into sugars in a process called carbon fixation; photosynthesis captures energy from sunlight to convert carbon dioxide into",
       "rewritten_claim": null,
       "reverify_status": "Skipped (Verdict is not Contradicted)"
     },
     {
       "index": 7,
+      "claim_text": "Oxygen is an output of photosynthesis.",
+      "is_numeric": false,
+      "source_sentence": "Water and carbon dioxide are the primary inputs, and oxygen and glucose are the outputs.",
+      "routing": "Routed to Wikipedia first (encyclopedic definition/historical fact), supplemented by Tavily",
+      "passages": [
+        {
+          "text": "The two inputs of photosynthesis that are matter are carbon dioxide (CO2) and water (H2O).\n\n Is ATP an input or output of photosynthesis?\n\nNo, ATP is not an input or output of photosynthesis. It is produced as a result of the light-dependent reactions in photosynthesis, but it is not directly involved in the inputs or outputs of the process.\n\n What is the final output of photosynthesis?\n\nThe final",
+          "source": "What Are the Inputs and Outputs of Photosynthesis? (https://www.spider-farmer.com/blog/inputs-and-outputs-of-photosynthesis)",
+          "source_type": "tavily",
+          "similarity_score": 0.49
+        },
+        {
+          "text": "Oxygen is another important byproduct of photosynthesis. It is produced during the light-dependent reactions through a process called photolysis. In this process, light energy is used by plants to split water molecules into oxygen, protons, and electrons. As plants absorb light energy, carbon dioxide, and water to produce glucose, oxygen molecules are released and expelled into the surrounding env",
+          "source": "Understanding the Inputs and Outputs of Photosynthesis - Mars Hydro (https://www.mars-hydro.com/info/post/inputs-and-outputs-of-photosynthesis)",
+          "source_type": "tavily",
+          "similarity_score": 0.239
+        },
+        {
+          "text": "Photosynthesis: fuel their metabolism. The term photosynthesis usually refers to oxygenic photosynthesis, a process that releases oxygen as a byproduct of water splitting",
+          "source": "Wikipedia: Photosynthesis (https://en.wikipedia.org/wiki/Photosynthesis)",
+          "source_type": "wikipedia",
+          "similarity_score": 0.22
+        }
+      ],
+      "signal_b": {
+        "verdict": "Supported",
+        "score": 0.9976
+      },
+      "final_verdict": "Supported",
+      "confidence": 0.91,
+      "arbitration_mode": "Dual-Signal Consensus (Signal A and B Agree)",
+      "evidence_source": "Understanding the Inputs and Outputs of Photosynthesis - Mars Hydro (https://www.mars-hydro.com/info/post/inputs-and-outputs-of-photosynthesis)",
+      "evidence_snippet": "The term photosynthesis usually refers to oxygenic photosynthesis, a process that releases oxygen as a byproduct of water splitting",
+      "rewritten_claim": null,
+      "reverify_status": "Skipped (Verdict is not Contradicted)"
+    },
+    {
+      "index": 8,
+      "claim_text": "Glucose is an output of photosynthesis.",
+      "is_numeric": false,
+      "source_sentence": "Water and carbon dioxide are the primary inputs, and oxygen and glucose are the outputs.",
+      "routing": "Routed to Wikipedia first (encyclopedic definition/historical fact), supplemented by Tavily",
+      "passages": [
+        {
+          "text": "The outputs of photosynthesis are also in the form of matter and energy. Photosynthesis makes chemical energy in the form of glucose and matter in the form of oxygen gas. These are the products of the reaction and thus are considered the outputs of the process.\n\nGlucose is an important output of photosynthesis.\n\n|  |\n\n| glucose |\n\nGlucose is an important output of photosynthesis.\n\nglucose\n\nThe inp",
+          "source": "Inputs and Outputs of Photosynthesis | Overview & Process (https://study.com/academy/lesson/matter-energy-changes-during-photosynthesis.html)",
+          "source_type": "tavily",
+          "similarity_score": 0.504
+        },
+        {
+          "text": "Sugar: juices and is the primary product of photosynthesis. Starch is converted into glucose during digestion, and glucose is the form of sugar that is transported",
+          "source": "Wikipedia: Sugar (https://en.wikipedia.org/wiki/Sugar)",
+          "source_type": "wikipedia",
+          "similarity_score": 0.383
+        },
+        {
+          "text": "Glucose is the primary product of photosynthesis. Through the complex series of reactions in the chloroplasts, plants convert carbon dioxide, water, and light energy into glucose molecules. Glucose is a simple sugar, represented by the chemical formula C6H12O6. It serves as a versatile and vital energy source for plants and is utilized for various metabolic activities.\n\nUtilization of Glucose for ",
+          "source": "What Are the Inputs and Outputs of Photosynthesis? (https://www.spider-farmer.com/blog/inputs-and-outputs-of-photosynthesis)",
+          "source_type": "tavily",
+          "similarity_score": 0.325
+        }
+      ],
+      "signal_b": {
+        "verdict": "Supported",
+        "score": 0.9979
+      },
+      "final_verdict": "Supported",
+      "confidence": 0.92,
+      "arbitration_mode": "Dual-Signal Consensus (Signal A and B Agree)",
+      "evidence_source": "Inputs and Outputs of Photosynthesis | Overview & Process (https://study.com/academy/lesson/matter-energy-changes-during-photosynthesis.html)",
+      "evidence_snippet": "Glucose is the primary product of photosynthesis.",
+      "rewritten_claim": null,
+      "reverify_status": "Skipped (Verdict is not Contradicted)"
+    },
+    {
+      "index": 9,
       "claim_text": "Charles Darwin fully explained photosynthesis in 1859.",
       "is_numeric": true,
       "source_sentence": "Photosynthesis was first fully explained by Charles Darwin in 1859.",
@@ -358,65 +465,71 @@
           "similarity_score": 0.233
         },
         {
-          "text": "#OnThisDay in 1859, Charles Darwin revolutionized our understanding of life on Earth with the publication of \"On the Origin of Species.\" Few studies have illustrated Darwin\u2019s principles of evolution more vividly than the decades-long work of #NASmembers Peter and Rosemary Grant in the Gal\u00e1pagos. Through painstaking observation of finch populations on Daphne Major, the Grants have documented evolut",
-          "source": "#OnThisDay in 1859, Charles Darwin revolutionized ... (https://www.facebook.com/theNASciences/posts/onthisday-in-1859-charles-darwin-revolutionized-our-understanding-of-life-on-ear/1285203466973051)",
+          "text": "In a magnificent final chapter, Darwin recaps what has gone before, but with increasing confidence. In places, he even manages to overcome his almost painful modesty and strut a little. His theory\u2019s merit, he fully appreciates, is that it explains so much, and that it will open up many new fields of research: [...] One important challenge Darwin needed to overcome was to explain the current geogra",
+          "source": "Book review: \u2018On the Origin of Species\u2019 by Charles Darwin (1st ed., 1859) \u2013 The Friends of Charles Darwin (https://friendsofdarwin.com/reviews/book-review-origin-of-species-by-charles-darwin)",
           "source_type": "tavily",
-          "similarity_score": 0.167
+          "similarity_score": 0.112
         },
         {
-          "text": "Nearly all of Darwin\u2019s works, including his published books, articles, and notebooks, are freely available at Darwin Online: \n Darwin\u2019s correspondence is edited, published, and also digitized and made freely available by a project at the University of Cambridge: <>\n Darwin, Charles. 1859. On the Origin of Species by Means of Natural Selection, or the Preservation of Favoured Races in the Struggle ",
-          "source": "Charles Darwin (1809\u20131882) (https://iep.utm.edu/darwin)",
-          "source_type": "tavily",
-          "similarity_score": 0.145
+          "text": "Evolution as fact and theory: also refer to explanatory theories (such as Charles Darwin&#039;s theory of natural selection) which explain the mechanisms of evolution. To a scientist,",
+          "source": "Wikipedia: Evolution as fact and theory (https://en.wikipedia.org/wiki/Evolution_as_fact_and_theory)",
+          "source_type": "wikipedia",
+          "similarity_score": 0.105
         }
       ],
       "signal_b": {
         "verdict": "Contradicted",
-        "score": 0.9984
+        "score": 0.9997
       },
       "final_verdict": "Contradicted",
       "confidence": 0.9,
       "arbitration_mode": "Dual-Signal Consensus (Signal A and B Agree)",
-      "evidence_source": "#OnThisDay in 1859, Charles Darwin revolutionized ... (https://www.facebook.com/theNASciences/posts/onthisday-in-1859-charles-darwin-revolutionized-our-understanding-of-life-on-ear/1285203466973051)",
-      "evidence_snippet": "#OnThisDay in 1859, Charles Darwin revolutionized our understanding of life on Earth with the publication of \"On the Origin of Species.\"",
-      "rewritten_claim": "In 1859, Charles Darwin published 'On the Origin of Species,' which revolutionized the understanding of life on Earth.",
-      "reverify_status": "Passed (Grounded in Evidence)"
+      "evidence_source": "Wikipedia: Evolution as fact and theory (https://en.wikipedia.org/wiki/Evolution_as_fact_and_theory)",
+      "evidence_snippet": "also refer to explanatory theories (such as Charles Darwin's theory of natural selection) which explain the mechanisms of evolution.",
+      "rewritten_claim": null,
+      "reverify_status": "No correction possible from snippet"
     },
     {
-      "index": 8,
-      "claim_text": "In 2023, researchers at MIT announced an artificial photosynthesis system.",
+      "index": 10,
+      "claim_text": "Researchers at MIT announced an artificial photosynthesis system in 2023.",
       "is_numeric": true,
       "source_sentence": "In 2023, researchers at MIT announced a breakthrough artificial photosynthesis system that achieved 15% efficiency, more than double the average efficiency of natural photosynthesis in most plants (around 1-2%).",
       "routing": "Routed to Tavily first (real-time/numeric stats/dates), supplemented by Wikipedia",
       "passages": [
         {
-          "text": "Summary:\n:   Scientists have developed an artificial photosynthesis system that essentially regulates itself, eliminating the need for batteries used in many current designs. The key innovation is an electrolyzer that automatically adapts to changing sunlight by altering its electrical properties as it heats up. This keeps solar fuel production more stable while reducing cost and complexity.\n\nShar",
-          "source": "Scientists built a battery-free device that turns sunlight into ... (https://www.sciencedaily.com/releases/2026/06/260611024601.htm)",
+          "text": "AZoM\nAn AZoNetwork Site\n\n# Artificial Photosynthesis System Offers Promising Solution for Carbon Dioxide Reduction\n\nA critical step in reusing CO2 to produce sustainable fuels is linking carbon atoms together, and researchers at the University of Michigan have developed an artificial photosynthesis system that successfully binds two carbon atoms into hydrocarbons with industry-leading efficiency. ",
+          "source": "Artificial Photosynthesis System Offers Promising Solution for Carbon Dioxide Reduction (https://www.azom.com/news.aspx?newsID=63678)",
           "source_type": "tavily",
-          "similarity_score": 0.191
+          "similarity_score": 0.346
         },
         {
-          "text": "The co-first authors of the paper were Guangxu Lan (PhD\u201920, now with Peking University), graduate student Yingjie Fan, and Wenjie Shi (Visiting student, now with Tianjin University of Technology. The other authors of the paper were Eric You (BS\u201920, now a graduate student at MIT) and Samuel Veroneau (BS\u201920, now a PhD student at Harvard University). [...] In nature, photosynthesis is performed by se",
-          "source": "Chemists create an 'artificial photosynthesis' system that is 10 ... (https://news.uchicago.edu/story/chemists-create-artificial-photosynthesis-system-10-times-more-efficient-existing-systems)",
+          "text": "The study is the latest in an ongoing series examining the process of photosynthesis and the different variables that determine its efficiency, conducted by Associate Professor of Chemistry Jianshu Cao and his postdocs and colleagues. The new work, which looks at artificial photosynthetic systems based on self-assembling molecules designed by researchers at the University of California, Berkeley, ",
+          "source": "Fine-tuning photosynthesis | MIT Energy Initiative (https://energy.mit.edu/news/fine-tuning-photosynthesis)",
           "source_type": "tavily",
-          "similarity_score": 0.092
+          "similarity_score": 0.145
+        },
+        {
+          "text": "Cyborg: Cyberculture. Cambridge, MA: MIT Press. Franchi, Stefano, and G\u00fcven G\u00fczeldere, eds. 2005. Mechanical Bodies, Computational Minds: Artificial Intelligence from Automata",
+          "source": "Wikipedia: Cyborg (https://en.wikipedia.org/wiki/Cyborg)",
+          "source_type": "wikipedia",
+          "similarity_score": 0.075
         }
       ],
       "signal_b": {
-        "verdict": "Not Enough Info",
-        "score": 0.9989
+        "verdict": "Contradicted",
+        "score": 0.9988
       },
       "final_verdict": "Not Enough Info",
-      "confidence": 0.71,
-      "arbitration_mode": "Dual-Signal Consensus (Signal A and B Agree)",
-      "evidence_source": "Scientists built a battery-free device that turns sunlight into ... (https://www.sciencedaily.com/releases/2026/06/260611024601.htm)",
-      "evidence_snippet": "Scientists have developed an artificial photosynthesis system that essentially regulates itself",
+      "confidence": 0.62,
+      "arbitration_mode": "Dual-Signal Conflict (A: Not Enough Info vs B: Contradicted -> NEI)",
+      "evidence_source": "Artificial Photosynthesis System Offers Promising Solution for Carbon Dioxide Reduction (https://www.azom.com/news.aspx?newsID=63678)",
+      "evidence_snippet": "researchers at the University of Michigan have developed an artificial photosynthesis system",
       "rewritten_claim": null,
       "reverify_status": "Skipped (Verdict is not Contradicted)"
     },
     {
-      "index": 9,
-      "claim_text": "The artificial photosynthesis system developed by MIT researchers in 2023 achieved 15% efficiency.",
+      "index": 11,
+      "claim_text": "The artificial photosynthesis system developed by MIT researchers achieved 15% efficiency.",
       "is_numeric": true,
       "source_sentence": "In 2023, researchers at MIT announced a breakthrough artificial photosynthesis system that achieved 15% efficiency, more than double the average efficiency of natural photosynthesis in most plants (around 1-2%).",
       "routing": "Routed to Tavily first (real-time/numeric stats/dates), supplemented by Wikipedia",
@@ -425,35 +538,35 @@
           "text": "Artificial photosynthesis: Artificial photosynthesis is a chemical process that biomimics the natural process of photosynthesis. The term artificial photosynthesis is used loosely",
           "source": "Wikipedia: Artificial photosynthesis (https://en.wikipedia.org/wiki/Artificial_photosynthesis)",
           "source_type": "wikipedia",
-          "similarity_score": 0.281
+          "similarity_score": 0.306
         },
         {
-          "text": "Summary:\n:   Scientists have developed an artificial photosynthesis system that essentially regulates itself, eliminating the need for batteries used in many current designs. The key innovation is an electrolyzer that automatically adapts to changing sunlight by altering its electrical properties as it heats up. This keeps solar fuel production more stable while reducing cost and complexity.\n\nShar",
-          "source": "Scientists built a battery-free device that turns sunlight into ... (https://www.sciencedaily.com/releases/2026/06/260611024601.htm)",
+          "text": "Researchers led by MIT professor Daniel Nocera have produced something they\u2019re calling an \u201cartificial leaf\u201d: Like living leaves, the device can turn the energy of sunlight directly into a chemical fuel that can be stored and used later as an energy source.",
+          "source": "'Artificial leaf' makes fuel from sunlight (https://news.mit.edu/2011/artificial-leaf-0930)",
           "source_type": "tavily",
-          "similarity_score": 0.185
+          "similarity_score": 0.16
         },
         {
-          "text": "Bionic Leaf: well as providing needed clean energy. In 2009 at MIT, Daniel Nocera&#039;s lab first developed the &quot;artificial leaf&quot;, a device made from silicon and an anode",
-          "source": "Wikipedia: Bionic Leaf (https://en.wikipedia.org/wiki/Bionic_Leaf)",
-          "source_type": "wikipedia",
-          "similarity_score": 0.126
+          "text": "In the process of converting water into hydrogen and oxygen, the photocatalyst plays an important role. Light is shone on the catalyst, which is in sheet form and soaked in water, separates the water into hydrogen and oxygen without using electricity. A feature of this process is that, at the production stage, the process does not emit CO\u2082 as solar energy is used. In Artificial Photosynthesis, an ",
+          "source": "Artificial Photosynthesis\uff5cMitsubishi Chemical Group (https://www.mcgc.com/english/kaiteki_solution_center/oursolution/01.html)",
+          "source_type": "tavily",
+          "similarity_score": 0.132
         }
       ],
       "signal_b": {
         "verdict": "Not Enough Info",
-        "score": 0.9994
+        "score": 0.9995
       },
       "final_verdict": "Not Enough Info",
       "confidence": 0.72,
       "arbitration_mode": "Dual-Signal Consensus (Signal A and B Agree)",
-      "evidence_source": "Wikipedia: Bionic Leaf (https://en.wikipedia.org/wiki/Bionic_Leaf)",
-      "evidence_snippet": "In 2009 at MIT, Daniel Nocera's lab first developed the \"artificial leaf\", a device made from silicon and an anode",
+      "evidence_source": "'Artificial leaf' makes fuel from sunlight (https://news.mit.edu/2011/artificial-leaf-0930)",
+      "evidence_snippet": "Researchers led by MIT professor Daniel Nocera have produced something they\u2019re calling an \u201cartificial leaf\u201d",
       "rewritten_claim": null,
       "reverify_status": "Skipped (Verdict is not Contradicted)"
     },
     {
-      "index": 10,
+      "index": 12,
       "claim_text": "The average efficiency of natural photosynthesis in most plants is around 1-2%.",
       "is_numeric": true,
       "source_sentence": "In 2023, researchers at MIT announced a breakthrough artificial photosynthesis system that achieved 15% efficiency, more than double the average efficiency of natural photosynthesis in most plants (around 1-2%).",
@@ -491,7 +604,7 @@
       "reverify_status": "Skipped (Verdict is not Contradicted)"
     },
     {
-      "index": 11,
+      "index": 13,
       "claim_text": "The Amazon rainforest produces roughly 20% of the world's oxygen through photosynthesis.",
       "is_numeric": true,
       "source_sentence": "The Amazon rainforest produces roughly 20% of the world's oxygen through photosynthesis.",
@@ -520,16 +633,16 @@
         "verdict": "Supported",
         "score": 0.5663
       },
-      "final_verdict": "Not Enough Info",
-      "confidence": 0.59,
-      "arbitration_mode": "Direct Conflict (A: Contradicted vs B: Supported -> NEI)",
+      "final_verdict": "Contradicted",
+      "confidence": 0.9,
+      "arbitration_mode": "Explicit Refutation Override ('misleading')",
       "evidence_source": "Why the Amazon doesn't really produce 20% of the world's ... (https://www.nationalgeographic.com/environment/article/why-amazon-doesnt-produce-20-percent-worlds-oxygen)",
-      "evidence_snippet": "In fact, it\u2019s a gross overestimate. The Amazon\u2019s net contribution to the oxygen we breathe likely hovers around zero.",
-      "rewritten_claim": null,
-      "reverify_status": "Skipped (Verdict is not Contradicted)"
+      "evidence_snippet": "The Amazon rainforest is often called the \u201clungs of the Earth\u201d and credited with producing some 20 percent of the world\u2019s oxygen. But that\u2019s often a repeated, yet misleading claim. In fact, it\u2019s a gross overestimate. The Amazon\u2019s net contribution to",
+      "rewritten_claim": "The Amazon rainforest contributes 20% of the oxygen produced on land via photosynthesis.",
+      "reverify_status": "Passed (Grounded in Evidence)"
     },
     {
-      "index": 12,
+      "index": 14,
       "claim_text": "Google released Gemini 3.5 Flash in May 2026.",
       "is_numeric": true,
       "source_sentence": "Gemini 3.5 Flash was released by Google in May 2026 and supports structured JSON output.",
@@ -558,16 +671,16 @@
         "verdict": "Contradicted",
         "score": 0.9997
       },
-      "final_verdict": "Contradicted",
-      "confidence": 0.91,
-      "arbitration_mode": "Dual-Signal Consensus (Signal A and B Agree)",
+      "final_verdict": "Not Enough Info",
+      "confidence": 0.58,
+      "arbitration_mode": "Direct Conflict (A: Supported vs B: Contradicted -> NEI)",
       "evidence_source": "Wikipedia: Google Gemini (https://en.wikipedia.org/wiki/Google_Gemini)",
       "evidence_snippet": "Google CEO Sundar Pichai introduces Gemini 3.5 Flash at Google I/O 2026.",
-      "rewritten_claim": "Google introduced Gemini 3.5 Flash at the Google I/O 2026 developers conference.",
-      "reverify_status": "Passed (Grounded in Evidence)"
+      "rewritten_claim": null,
+      "reverify_status": "Skipped (Verdict is not Contradicted)"
     },
     {
-      "index": 13,
+      "index": 15,
       "claim_text": "Gemini 3.5 Flash supports structured JSON output.",
       "is_numeric": false,
       "source_sentence": "Gemini 3.5 Flash was released by Google in May 2026 and supports structured JSON output.",
@@ -600,7 +713,7 @@
     }
   ],
   "metrics": {
-    "total_latency_seconds": 90.75,
+    "total_latency_seconds": 93.7,
     "total_gemini_api_calls": 5
   }
 }

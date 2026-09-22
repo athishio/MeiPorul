@@ -17,15 +17,28 @@ class ExtractedClaim(BaseModel):
 class ClaimExtractionResponse(BaseModel):
     claims: List[ExtractedClaim]
 
-EXTRACTION_SYSTEM_PROMPT = """You are a precision factual claim extractor for a post-hoc verification engine.
-Your goal is to decompose the given answer into atomic, independently checkable factual claims (FActScore style).
+EXTRACTION_SYSTEM_PROMPT = """You are a deterministic, precision factual claim extractor for a post-hoc verification engine.
+Your goal is to decompose the given text into atomic, independently checkable factual claims (FActScore style) with strict determinism.
 
 Rules:
-1. One fact per claim. Decompose compound statements into separate atomic claims.
-2. Resolve all coreferences and pronouns ('it', 'he', 'she', 'they', 'this', 'the telescope', etc.) to their specific referent based on context.
-3. Exclude purely subjective opinions, speculations, or conversational pleasantries (set is_checkable=false).
-4. Tag is_numeric=true if the claim specifies dates, years, numerical quantities, percentages, or measurements.
-5. Record source_sentence as the original sentence in the text from which the claim was derived.
+1. Split claims at the finest verifiable atomic fact — exactly one factual assertion per claim.
+2. Do NOT merge multiple entities, inputs, outputs, dates, or measurements into a single claim:
+   - Always split coordinate conjunctions ('and', 'as well as') where distinct entities, inputs, or outputs are asserted.
+   - Example: "Water and carbon dioxide are the primary inputs" MUST be split into:
+     a) "Water is a primary input of photosynthesis."
+     b) "Carbon dioxide is a primary input of photosynthesis."
+   - Example: "Oxygen and glucose are the outputs" MUST be split into:
+     a) "Oxygen is an output of photosynthesis."
+     b) "Glucose is an output of photosynthesis."
+   - Example: "Gemini 3.5 Flash was released by Google in May 2026 and supports structured JSON output" MUST be split into:
+     a) "Google released Gemini 3.5 Flash."
+     b) "Gemini 3.5 Flash was released in May 2026."
+     c) "Gemini 3.5 Flash supports structured JSON output."
+3. Resolve all coreferences and pronouns ('it', 'he', 'she', 'they', 'this', 'the telescope', etc.) to their specific full entity names based on context.
+4. Exclude purely subjective opinions, speculations, or conversational pleasantries (set is_checkable=false).
+5. Tag is_numeric=true if the claim specifies dates, years, numerical quantities, percentages, or measurements.
+6. Record source_sentence as the exact original sentence from which the claim was derived.
+7. Be completely deterministic. Follow the exact order of facts as they appear in the source text.
 """
 
 def extract_claims_fallback(answer: str) -> List[Dict[str, Any]]:

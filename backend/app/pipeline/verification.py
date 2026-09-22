@@ -96,6 +96,44 @@ def verify_numeric_claim(claim: str, passage: str) -> Optional[Tuple[str, float]
 
     return None
 
+REFUTATION_KEYWORDS = [
+    r'\b(?:gross\s+)?overestimate(?:d|s)?\b',
+    r'\bmyth\b',
+    r'\bdebunk(?:ed|s)?\b',
+    r'\bcontrary to\b',
+    r'\bmisconception\b',
+    r'\bmisleading\b',
+    r'\bincorrect\b',
+    r'\bdisproved?\b',
+    r'\bhovers?\s+around\s+zero\b',
+    r'\bdoes\s+not\s+(?:actually\s+)?produce\b',
+    r'\bdoesn\'t\s+(?:actually\s+)?produce\b',
+    r'\buntrue\b',
+    r'\bfalse(?:ly)?\b',
+    r'\bin\s+fact,\s+it\b',
+    r'\bactually\b'
+]
+REFUTATION_REGEX = re.compile('|'.join(REFUTATION_KEYWORDS), re.IGNORECASE)
+
+def check_explicit_refutation(claim: str, passages: List[Dict[str, Any]]) -> Optional[Tuple[str, Dict[str, Any]]]:
+    """
+    Checks if any passage contains explicit refutation/debunking language directed at the claim's core subject.
+    Returns (matched_phrase, passage) if found.
+    """
+    claim_words = set(re.findall(r'\b[a-zA-Z]{4,}\b', claim.lower()))
+    stopwords = {"with", "that", "this", "from", "were", "been", "have", "which", "about", "into", "their", "more", "most"}
+    claim_content = claim_words - stopwords
+
+    for p in passages:
+        text = p["text"]
+        match = REFUTATION_REGEX.search(text)
+        if match:
+            p_words = set(re.findall(r'\b[a-zA-Z]{4,}\b', text.lower()))
+            overlap = len(claim_content & p_words) / max(1, len(claim_content))
+            if overlap >= 0.35:
+                return (match.group(0), p)
+    return None
+
 def run_nli_signal(premise: str, hypothesis: str) -> Tuple[str, float]:
     """
     Signal B: Natural Language Inference cross-encoder check using DeBERTa.
@@ -392,7 +430,8 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
             "evidence_snippet": "No corroborating evidence retrieved.",
             "confidence": 0.50,
             "rewritten_claim": None,
-            "arbitration_mode": "No Evidence"
+            "arbitration_mode": "No Evidence",
+            "reason": "no_matching_evidence"
         }
 
     # 1. Evaluate Signal B on all passages to find the most informative passage
@@ -408,7 +447,10 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
                 numeric_override = (check[0], check[1], p)
                 break
 
-    # 3. Signal A: Use precomputed batch result or execute single call
+    # 3. Check for explicit refutation language (debunking/myth/overestimate)
+    refutation_match = check_explicit_refutation(claim_text, passages)
+
+    # 4. Signal A: Use precomputed batch result or execute single call
     if precomputed_signal_a is not None:
         signal_a = precomputed_signal_a
     else:
@@ -428,13 +470,23 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
                 evidence_source = p["source"]
                 break
 
-    # 4. Consensus arbitration
+    # 5. Consensus arbitration
+    reason = None
     if numeric_override and numeric_override[0] == "Contradicted":
         final_verdict = "Contradicted"
         confidence = numeric_override[1]
         evidence_source = numeric_override[2]["source"]
         evidence_quote = numeric_override[2]["text"][:250]
         arbitration_mode = "Numeric Exact Override"
+
+    elif refutation_match and (verdict_a == "Contradicted" or nli_score < 0.85):
+        # ISSUE 1 FIX: Explicit refutation in authoritative evidence (e.g. myth / overestimate / debunked)
+        ref_phrase, ref_p = refutation_match
+        final_verdict = "Contradicted"
+        confidence = 0.90
+        evidence_source = ref_p["source"]
+        evidence_quote = ref_p["text"][:250]
+        arbitration_mode = f"Explicit Refutation Override ('{ref_phrase}')"
 
     elif not signal_a_available:
         # BUG 1 FIX: Fall back to Signal B directly instead of collapsing to NEI
@@ -446,12 +498,15 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
             final_verdict = "Not Enough Info"
             confidence = round(0.55 + (0.10 * avg_similarity), 2)
             arbitration_mode = f"Single-Signal Fallback (Signal B score {nli_score:.2f} < 0.60 -> NEI)"
+            reason = "low_confidence_threshold" if nli_score < 0.60 else "insufficient_detail"
 
     elif verdict_a == verdict_b:
         final_verdict = verdict_a
         base_conf = 0.88 if final_verdict != "Not Enough Info" else 0.70
         confidence = round(min(0.99, base_conf + (0.10 * avg_similarity)), 2)
         arbitration_mode = "Dual-Signal Consensus (Signal A and B Agree)"
+        if final_verdict == "Not Enough Info":
+            reason = "insufficient_detail"
 
     elif (verdict_a == "Supported" and verdict_b == "Not Enough Info") or (verdict_a == "Not Enough Info" and verdict_b == "Supported"):
         # Mediated Consensus: One signal finds direct entailment while the other has insufficient context (no contradiction)
@@ -463,12 +518,23 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
         final_verdict = "Not Enough Info"
         confidence = round(0.60 + (0.08 * avg_similarity), 2)
         arbitration_mode = f"Dual-Signal Conflict (A: {verdict_a} vs B: {verdict_b} -> NEI)"
+        reason = "conflicting_signals"
 
     else:
         # True direct conflict (Supported vs Contradicted)
         final_verdict = "Not Enough Info"
         confidence = round(0.55 + (0.10 * avg_similarity), 2)
         arbitration_mode = f"Direct Conflict (A: {verdict_a} vs B: {verdict_b} -> NEI)"
+        reason = "conflicting_signals"
+
+    # ISSUE 5 FIX: Assign machine-readable reason code to every NEI verdict
+    if final_verdict == "Not Enough Info":
+        if not passages or avg_similarity < 0.20:
+            reason = "no_matching_evidence"
+        elif not reason:
+            reason = "insufficient_detail"
+    else:
+        reason = None
 
     return {
         "claim_text": claim_text,
@@ -477,7 +543,8 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
         "evidence_snippet": evidence_quote.strip(),
         "confidence": confidence,
         "rewritten_claim": None,
-        "arbitration_mode": arbitration_mode
+        "arbitration_mode": arbitration_mode,
+        "reason": reason
     }
 
 def verify_claims_batch(claim_items: List[Dict[str, Any]], passages_per_claim: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:

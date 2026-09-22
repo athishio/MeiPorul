@@ -24,6 +24,10 @@ class ClaimResult(BaseModel):
         default=None, 
         description="Corrected version of the claim grounded strictly in evidence."
     )
+    reason: Optional[str] = Field(
+        default=None,
+        description="Machine-readable reason code when verdict is Not Enough Info: no_matching_evidence | conflicting_signals | low_confidence_threshold | insufficient_detail"
+    )
 
 class SummaryMetrics(BaseModel):
     total_claims: int = Field(..., description="Total number of claims checked.")

@@ -157,7 +157,8 @@ def run_detailed_pipeline():
                 "evidence_source": c["evidence_source"],
                 "evidence_snippet": c["evidence_snippet"],
                 "confidence": c["confidence"],
-                "rewritten_claim": c.get("rewritten_claim")
+                "rewritten_claim": c.get("rewritten_claim"),
+                "reason": c.get("reason")
             }
             for c in verified_claims
         ],
