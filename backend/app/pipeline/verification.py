@@ -194,6 +194,25 @@ def check_evidence_scope_mismatch(claim_text: str, evidence_text: str) -> Option
 
     return None
 
+def parse_source_details(source_str: str) -> Tuple[str, Optional[str], Optional[str]]:
+    """
+    Splits an evidence_source string into:
+    - evidence_source_name (e.g. 'Wikipedia: James Webb Space Telescope')
+    - evidence_source_url (e.g. 'https://en.wikipedia.org/wiki/James_Webb_Space_Telescope')
+    - evidence_source_domain (e.g. 'en.wikipedia.org')
+    """
+    from urllib.parse import urlparse
+    if not source_str or source_str.strip() in ("None", ""):
+        return source_str, None, None
+    m = re.search(r'\((https?://[^\s\)]+)\)\s*$', source_str)
+    if m:
+        url = m.group(1).strip()
+        name = source_str[:m.start()].strip()
+        parsed = urlparse(url)
+        domain = parsed.netloc.lower() if parsed.netloc else None
+        return name, url, domain
+    return source_str.strip(), None, None
+
 def run_nli_signal(premise: str, hypothesis: str) -> Tuple[str, float]:
     """
     Signal B: Natural Language Inference cross-encoder check using DeBERTa.
@@ -564,6 +583,9 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
             "claim_text": claim_text,
             "verdict": "Not Enough Info",
             "evidence_source": "None",
+            "evidence_source_name": "None",
+            "evidence_source_url": None,
+            "evidence_source_domain": None,
             "evidence_snippet": "No corroborating evidence retrieved.",
             "confidence": 0.50,
             "rewritten_claim": None,
@@ -699,10 +721,15 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
     else:
         reason = None
 
+    src_name, src_url, src_domain = parse_source_details(evidence_source)
+
     return {
         "claim_text": claim_text,
         "verdict": final_verdict,
         "evidence_source": evidence_source,
+        "evidence_source_name": src_name,
+        "evidence_source_url": src_url,
+        "evidence_source_domain": src_domain,
         "evidence_snippet": evidence_quote.strip(),
         "confidence": confidence,
         "rewritten_claim": None,

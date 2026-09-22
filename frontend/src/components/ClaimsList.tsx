@@ -136,9 +136,29 @@ export const ClaimsList: React.FC<ClaimsListProps> = ({ claims }) => {
               {isExpanded && (
                 <div className="px-4 pb-4 pt-1 border-t border-slate-800/80 mt-1">
                   <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-                    <span className="font-semibold text-slate-300 flex items-center gap-1.5">
-                      <ExternalLink className="h-3.5 w-3.5 text-cyan-400" />
-                      Retrieved Evidence Source: <span className="text-cyan-400 font-mono">{claim.evidence_source}</span>
+                    <span className="font-semibold text-slate-300 flex items-center gap-1.5 flex-wrap">
+                      <ExternalLink className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
+                      Retrieved Evidence Source:
+                      {claim.evidence_source_url ? (
+                        <a 
+                          href={claim.evidence_source_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-cyan-400 hover:text-cyan-300 hover:underline font-medium inline-flex items-center gap-1.5"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span>{claim.evidence_source_name || claim.evidence_source}</span>
+                          {claim.evidence_source_domain && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950/80 border border-cyan-800 text-cyan-300 font-mono font-normal">
+                              {claim.evidence_source_domain}
+                            </span>
+                          )}
+                        </a>
+                      ) : (
+                        <span className="text-slate-300 font-medium font-mono">
+                          {claim.evidence_source_name || claim.evidence_source}
+                        </span>
+                      )}
                     </span>
                   </div>
                   <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-xs text-slate-300 leading-relaxed overflow-x-auto whitespace-pre-wrap">

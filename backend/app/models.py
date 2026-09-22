@@ -18,7 +18,10 @@ class VerifyRequest(BaseModel):
 class ClaimResult(BaseModel):
     claim_text: str = Field(..., description="The atomic factual claim.")
     verdict: VerdictType = Field(..., description="Classification: Supported, Contradicted, or Not Enough Info.")
-    evidence_source: str = Field(..., description="Identifier or URL of the evidence source.")
+    evidence_source: str = Field(..., description="Combined identifier and URL of the evidence source.")
+    evidence_source_name: Optional[str] = Field(default=None, description="Human-readable title/name of the source.")
+    evidence_source_url: Optional[str] = Field(default=None, description="Direct URL of the evidence source if available, or null.")
+    evidence_source_domain: Optional[str] = Field(default=None, description="Domain/hostname of the source (e.g. en.wikipedia.org).")
     evidence_snippet: str = Field(..., description="Extracted snippet or quote from evidence.")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Derived confidence score (0.0 to 1.0).")
     rewritten_claim: Optional[str] = Field(

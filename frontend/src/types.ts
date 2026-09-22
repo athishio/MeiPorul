@@ -4,9 +4,13 @@ export interface Claim {
   claim_text: string;
   verdict: Verdict;
   evidence_source: string;
+  evidence_source_name?: string | null;
+  evidence_source_url?: string | null;
+  evidence_source_domain?: string | null;
   evidence_snippet: string;
   confidence: number;
   rewritten_claim: string | null;
+  reason?: string | null;
 }
 
 export interface Summary {
