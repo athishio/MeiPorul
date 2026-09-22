@@ -1,0 +1,77 @@
+[
+  {
+    "id": "item_1",
+    "question": "When was the Apollo 11 moon landing?",
+    "answer": "Apollo 11 landed on the Moon on July 20, 1969. Neil Armstrong and Buzz Aldrin spent over two hours exploring the lunar surface.",
+    "labeled_claims": [
+      {
+        "claim_text": "Apollo 11 landed on the Moon on July 20, 1969.",
+        "ground_truth_verdict": "Supported"
+      },
+      {
+        "claim_text": "Neil Armstrong and Buzz Aldrin explored the lunar surface.",
+        "ground_truth_verdict": "Supported"
+      }
+    ]
+  },
+  {
+    "id": "item_2",
+    "question": "Who invented the telephone?",
+    "answer": "Alexander Graham Bell was awarded the first US patent for the telephone in 1876. Thomas Edison invented the telephone in 1910.",
+    "labeled_claims": [
+      {
+        "claim_text": "Alexander Graham Bell was awarded the first US patent for the telephone in 1876.",
+        "ground_truth_verdict": "Supported"
+      },
+      {
+        "claim_text": "Thomas Edison invented the telephone in 1910.",
+        "ground_truth_verdict": "Contradicted"
+      }
+    ]
+  },
+  {
+    "id": "item_3",
+    "question": "What is the speed of light?",
+    "answer": "The speed of light in a vacuum is approximately 299,792 kilometers per second. Sound travels faster than light in open air.",
+    "labeled_claims": [
+      {
+        "claim_text": "The speed of light in a vacuum is approximately 299,792 kilometers per second.",
+        "ground_truth_verdict": "Supported"
+      },
+      {
+        "claim_text": "Sound travels faster than light in open air.",
+        "ground_truth_verdict": "Contradicted"
+      }
+    ]
+  },
+  {
+    "id": "item_4",
+    "question": "Tell me about the Eiffel Tower.",
+    "answer": "The Eiffel Tower is located in Paris, France. It was constructed for the 1889 World's Fair. It was made entirely of solid titanium.",
+    "labeled_claims": [
+      {
+        "claim_text": "The Eiffel Tower is located in Paris, France.",
+        "ground_truth_verdict": "Supported"
+      },
+      {
+        "claim_text": "The Eiffel Tower was constructed for the 1889 World's Fair.",
+        "ground_truth_verdict": "Supported"
+      },
+      {
+        "claim_text": "The Eiffel Tower was made entirely of solid titanium.",
+        "ground_truth_verdict": "Contradicted"
+      }
+    ]
+  },
+  {
+    "id": "item_5",
+    "question": "Who wrote Romeo and Juliet?",
+    "answer": "Romeo and Juliet is a tragedy written by William Shakespeare early in his career.",
+    "labeled_claims": [
+      {
+        "claim_text": "Romeo and Juliet is a tragedy written by William Shakespeare.",
+        "ground_truth_verdict": "Supported"
+      }
+    ]
+  }
+]
