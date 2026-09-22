@@ -5,6 +5,12 @@ __pycache__/
 *$py.class
 .pytest_cache/
 
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
 # Production build
 dist/
 build/
@@ -12,9 +18,15 @@ build/
 # Environment variables & secrets
 .env
 .env.local
+*.pem
+*.key
 
 # IDE & OS
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Temporary test logs and outputs
+factcheck_result_*.json
+*.log

@@ -11,7 +11,8 @@ class VerifyRequest(BaseModel):
     answer: str = Field(
         ..., 
         min_length=1, 
-        description="The AI-generated answer to fact-check."
+        max_length=15000,
+        description="The AI-generated answer to fact-check (max 15,000 characters)."
     )
 
 class ClaimResult(BaseModel):
