@@ -331,7 +331,7 @@ Currently built with Gemini 3.1 Flash Lite and local DeBERTa. Next production mi
 
 ## Team
 
-* **Athish M** — AI/ML, Nehru Institute of Technology, Coimbatore
+* **Athish M** — Tech Lead
 * **Bavithiran**
 * **Kamalesh**
 * **Rohinth** — Presentation Lead
