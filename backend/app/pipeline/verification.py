@@ -249,29 +249,62 @@ Provide JSON output with:
 
 def run_nli_signal_on_passages(passages: List[Dict[str, Any]], hypothesis: str) -> Tuple[str, float, Dict[str, Any]]:
     """
-    Evaluates all retrieved passages for a claim against the hypothesis using DeBERTa.
+    Evaluates retrieved passages for a claim against the hypothesis using DeBERTa.
     Returns (verdict, score, most_relevant_passage).
-    Prioritizes strong Supported or Contradicted verdicts over Not Enough Info.
+    Rules:
+    1. Sentence-level NLI: Cross-encoders (like nli-deberta-v3-small) operate on sentence-pair
+       premises. Multi-sentence passages dilute attention. Each passage is decomposed into sentences
+       in addition to the full passage text.
+    2. Entailment (Supported): If ANY candidate sentence/passage yields Supported with score >= 0.50,
+       return Supported with that corroborating passage and score.
+    3. Contradiction: Only allowed if candidate has genuine lexical overlap (>= 0.40) and explicit
+       contradiction score >= 0.70, and no candidate supported the claim.
+    4. Default: Not Enough Info.
     """
     if not passages:
         return "Not Enough Info", 0.50, {}
-        
-    best_verdict = "Not Enough Info"
-    best_score = 0.50
-    best_passage = passages[0]
+
+    # 1. Check for entailment (Supported) across all sentences and passages
+    best_supp = None
+    for p in passages:
+        text = p["text"]
+        sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', text) if len(s.strip()) > 15]
+        candidates = [text] + sentences
+
+        for cand in candidates:
+            v, s = run_nli_signal(cand, hypothesis)
+            if v == "Supported" and s >= 0.50:
+                if best_supp is None or s > best_supp[1]:
+                    best_supp = (v, s, p)
+    if best_supp:
+        return best_supp
+
+    # 2. Check for contradiction only on candidates that have genuine semantic overlap with the claim
+    best_contra = None
+    claim_words = set(re.findall(r'\b[a-zA-Z]{4,}\b', hypothesis.lower()))
+    stopwords = {"with", "that", "this", "from", "were", "been", "have", "which", "about", "into"}
+    claim_content_words = claim_words - stopwords
 
     for p in passages:
-        v, s = run_nli_signal(p["text"], hypothesis)
-        if v in ("Supported", "Contradicted"):
-            if best_verdict == "Not Enough Info" or s > best_score:
-                best_verdict = v
-                best_score = s
-                best_passage = p
-        elif best_verdict == "Not Enough Info" and s > best_score:
-            best_score = s
-            best_passage = p
+        text = p["text"]
+        sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', text) if len(s.strip()) > 15]
+        candidates = [text] + sentences
 
-    return best_verdict, best_score, best_passage
+        for cand in candidates:
+            cand_words = set(re.findall(r'\b[a-zA-Z]{4,}\b', cand.lower()))
+            overlap = len(claim_content_words & cand_words) / max(1, len(claim_content_words))
+
+            if overlap >= 0.40:
+                v, s = run_nli_signal(cand, hypothesis)
+                if v == "Contradicted" and s >= 0.70:
+                    if best_contra is None or s > best_contra[1]:
+                        best_contra = (v, s, p)
+    if best_contra:
+        return best_contra
+
+    # 3. Default to Not Enough Info on top passage
+    v0, s0 = run_nli_signal(passages[0]["text"], hypothesis)
+    return "Not Enough Info", max(s0 if v0 == "Not Enough Info" else 0.60, 0.60), passages[0]
 
 class ClaimVerificationItem(BaseModel):
     claim_id: int
@@ -420,11 +453,22 @@ def verify_single_claim(claim_item: Dict[str, Any], passages: List[Dict[str, Any
         confidence = round(min(0.99, base_conf + (0.10 * avg_similarity)), 2)
         arbitration_mode = "Dual-Signal Consensus (Signal A and B Agree)"
 
-    else:
-        # Disagreement between Signal A and Signal B -> Mark "Not Enough Info"
+    elif (verdict_a == "Supported" and verdict_b == "Not Enough Info") or (verdict_a == "Not Enough Info" and verdict_b == "Supported"):
+        # Mediated Consensus: One signal finds direct entailment while the other has insufficient context (no contradiction)
+        final_verdict = "Supported"
+        confidence = round(0.85 + (0.08 * avg_similarity), 2)
+        arbitration_mode = f"Mediated Consensus (A: {verdict_a}, B: {verdict_b} -> Supported)"
+
+    elif (verdict_a == "Contradicted" and verdict_b == "Not Enough Info") or (verdict_a == "Not Enough Info" and verdict_b == "Contradicted"):
         final_verdict = "Not Enough Info"
-        confidence = round(0.58 + (0.10 * avg_similarity), 2)
+        confidence = round(0.60 + (0.08 * avg_similarity), 2)
         arbitration_mode = f"Dual-Signal Conflict (A: {verdict_a} vs B: {verdict_b} -> NEI)"
+
+    else:
+        # True direct conflict (Supported vs Contradicted)
+        final_verdict = "Not Enough Info"
+        confidence = round(0.55 + (0.10 * avg_similarity), 2)
+        arbitration_mode = f"Direct Conflict (A: {verdict_a} vs B: {verdict_b} -> NEI)"
 
     return {
         "claim_text": claim_text,

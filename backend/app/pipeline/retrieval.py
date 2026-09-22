@@ -78,6 +78,8 @@ def fetch_wikipedia_passages(query: str, max_results: int = 3) -> List[Dict[str,
                 
                 for hit in search_hits:
                     title = hit.get("title", "")
+                    if title.lower().startswith("list of ") or "disambiguation" in title.lower():
+                        continue
                     # Strip html tags from snippet
                     snippet = re.sub(r'<[^>]+>', '', hit.get("snippet", ""))
                     page_url = f"https://en.wikipedia.org/wiki/{title.replace(' ', '_')}"
