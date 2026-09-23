@@ -337,4 +337,4 @@ Currently built with Gemini 3.1 Flash Lite and local DeBERTa. Next production mi
 * **Rohinth** — Presentation Lead
 
 ---
-*Built with pride for the **ML-2: Fact-Checked Answer Generation** hackathon problem statement.*
+*Built with pride for the **FORGEXAI** hackathon problem statement.*
