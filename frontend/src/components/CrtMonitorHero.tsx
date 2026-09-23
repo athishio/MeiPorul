@@ -138,23 +138,23 @@ export const CrtMonitorHero: React.FC<CrtMonitorHeroProps> = ({ onGoToVerifyDash
           <span className="text-[#ed670f]">A MORE TRUTHFUL TOMORROW</span>
         </div>
 
-        {/* Silkscreen Display Headline (§5.2) */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white tracking-tight leading-[1.1] max-w-3xl mx-auto">
+        {/* Editorial Display Headline */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-medium text-white tracking-[-0.025em] leading-[1.15] max-w-3xl mx-auto">
           The truth layer for AI answers
         </h1>
 
-        {/* Pixelify Sans Subhead (§5.2) */}
-        <p className="text-base sm:text-lg font-body text-[#cecdc9] max-w-2xl mx-auto leading-relaxed">
+        {/* Editorial Body Subhead (17px / 27px, #E8E4DD) */}
+        <p className="text-[17px] leading-[27px] font-body text-[#E8E4DD] tracking-[-0.1px] max-w-2xl mx-auto">
           Meiporul checks every claim in AI-generated responses using evidence,
           verification, and rewriting before the answer reaches the user.
         </p>
 
-        {/* Primary CTA Button: Single light-filled pill with dark text (§5.2) */}
+        {/* Primary CTA Button: Single light-filled pill with dark text */}
         <div className="pt-2 flex items-center justify-center gap-4">
           <button
             type="button"
             onClick={onGoToVerifyDashboard}
-            className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-[10px] bg-white hover:bg-[#cecdc9] text-[#16120f] font-body text-[14px] font-bold shadow-lg transition-transform active:scale-95"
+            className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-[10px] bg-white hover:bg-[#cecdc9] text-[#16120f] font-sans text-[14px] font-semibold shadow-lg transition-transform active:scale-95"
           >
             <span>Try Meiporul</span>
             <ArrowRight className="h-4 w-4" />
@@ -168,7 +168,9 @@ export const CrtMonitorHero: React.FC<CrtMonitorHeroProps> = ({ onGoToVerifyDash
         <div className="hidden xl:flex xl:col-span-2 flex-col justify-between h-[520px] text-xs font-mono text-[#9f9b92] border-l border-[rgba(255,255,255,0.08)] pl-4 min-w-0">
           <div className="space-y-1">
             <div className="text-[#9f9b92] text-sm">—</div>
-            <div className="text-white font-bold tracking-wider">MEIPORUL</div>
+            <div className="font-brand font-semibold text-[#f7f6f3] tracking-[-0.025em] uppercase text-sm">
+              MEIPORUL
+            </div>
             <div className="text-[11px] text-[#9f9b92] leading-tight">
               FOR A MORE<br />TRUTHFUL<br />INTERNET
             </div>
@@ -212,8 +214,13 @@ export const CrtMonitorHero: React.FC<CrtMonitorHeroProps> = ({ onGoToVerifyDash
                   <div className="relative z-20 px-4 py-2.5 bg-[#16120f]/90 border-b border-[rgba(255,255,255,0.08)] flex items-center justify-between text-xs font-mono">
                     <div className="flex items-center gap-2">
                       <span className="text-sm">👁</span>
-                      <span className="text-[#ed670f] font-bold">Meiporul</span>
-                      <span className="text-[#9f9b92] text-[11px]">v1.0.0</span>
+                      <span className="font-brand font-semibold text-[#f7f6f3] tracking-[-0.025em] text-[13px] uppercase">
+                        MEIPORUL
+                      </span>
+                      <span className="font-tamil font-semibold text-[11px] text-[#ed670f] bg-[#622d08]/40 border border-[#ed670f]/40 px-1.5 py-0.5 rounded-[10px]">
+                        மெய்பொருள்
+                      </span>
+                      <span className="text-[#9f9b92] text-[11px] font-mono">v1.0.0</span>
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
@@ -591,11 +598,10 @@ export const CrtMonitorHero: React.FC<CrtMonitorHeroProps> = ({ onGoToVerifyDash
           </div>
 
           <div className="space-y-1 my-auto py-2">
-            <div className="text-[#9f9b92] text-sm">—</div>
-            <div className="text-white font-serif text-sm tracking-wide">
-              "மெய்ப்பொருள்<br />காண்பதறிவு"
+            <div className="font-tamil text-white text-[15px] font-semibold leading-snug tracking-normal">
+              "மெய்பொருள்<br />காண்பதறிவு"
             </div>
-            <div className="text-[11px] text-[#9f9b92]">— THIRUKKURAL</div>
+            <div className="text-[11px] text-[#9f9b92] font-mono">— THIRUKKURAL 423</div>
             <div className="text-[11px] text-white font-bold tracking-wide">
               TRUTH ALONE<br />IS KNOWLEDGE
             </div>

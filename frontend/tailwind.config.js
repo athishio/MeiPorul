@@ -29,9 +29,13 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Silkscreen"', 'monospace'],
-        body: ['"Pixelify Sans"', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'monospace'],
+        brand: ['"Inter Tight"', '"Inter Tight Fallback"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Inter Tight"', '"Inter Tight Fallback"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        tamil: ['"Anek Tamil"', '"Noto Sans Tamil"', 'sans-serif'],
+        sans: ['"Inter Tight"', '"Inter Tight Fallback"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        body: ['"Inter Tight"', '"Inter Tight Fallback"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', '"JetBrains Mono"', 'monospace'],
+        terminal: ['"IBM Plex Mono"', 'monospace'],
       },
       borderRadius: {
         none: '0px',

@@ -2,7 +2,7 @@
 ### *A claim-level trust layer for AI-generated content.*
 
 > **"எப்பொருள் யார்யார்வாய்க் கேட்பினும் அப்பொருள்  
-> மெய்ப்பொருள் காண்ப தறிவு"**  
+> மெய்பொருள் காண்ப தறிவு"**  
 > — **திருவள்ளுவர் (Tirukkural 423)**  
 > *"Whosoever says whatever, to discern the ultimate truth and substance therein is true wisdom."*
 

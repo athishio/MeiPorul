@@ -26,47 +26,72 @@
 
   body {
     background-color: var(--bg);
-    color: var(--text-secondary);
-    font-family: 'Pixelify Sans', sans-serif;
-    font-size: 15px;
-    line-height: 1.55;
-    letter-spacing: 0;
+    color: #E8E4DD;
+    font-family: 'Inter Tight', 'Inter Tight Fallback', ui-sans-serif, system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 27px;
+    letter-spacing: -0.1px;
+    font-weight: 400;
   }
 
-  /* Strict typography hierarchy & min size constraints */
+  /* Editorial typography hierarchy: Inter Tight */
   h1 {
-    font-family: 'Silkscreen', monospace;
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1.0;
-    letter-spacing: -0.25px;
+    font-family: 'Inter Tight', 'Inter Tight Fallback', ui-sans-serif, system-ui, sans-serif;
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
     color: var(--text-primary);
   }
 
   h2 {
-    font-family: 'Silkscreen', monospace;
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.05;
-    letter-spacing: -0.25px;
+    font-family: 'Inter Tight', 'Inter Tight Fallback', ui-sans-serif, system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
     color: var(--text-primary);
   }
 
   h3 {
-    font-family: 'Pixelify Sans', sans-serif;
-    font-size: 14px;
+    font-family: 'Inter Tight', 'Inter Tight Fallback', ui-sans-serif, system-ui, sans-serif;
+    font-size: 18px;
     font-weight: 500;
-    line-height: 1.1;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
     color: var(--text-primary);
   }
 
+  p {
+    color: #E8E4DD;
+    font-size: 17px;
+    line-height: 27px;
+    letter-spacing: -0.1px;
+    font-weight: 400;
+  }
+
   button {
-    font-family: 'Pixelify Sans', sans-serif;
+    font-family: inherit;
     font-size: 14px;
-    font-weight: 500;
-    line-height: 1.5;
     border-radius: 0px;
   }
+}
+
+/* Brand Typography System */
+.brand-name {
+  font-family: 'Inter Tight', 'Inter Tight Fallback', ui-sans-serif, system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+
+.brand-tamil {
+  font-family: 'Anek Tamil', 'Noto Sans Tamil', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
 }
 
 /* CRT Scanline Overlay: subtle 4% opacity horizontal lines drifting slowly downward on ~8s loop */

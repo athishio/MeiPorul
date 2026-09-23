@@ -228,9 +228,11 @@ export function App() {
         {/* Clean CRT Footer */}
         <footer className="border-t border-[rgba(255,255,255,0.1)] bg-[#201c19] py-4 text-xs font-mono text-[#9f9b92]">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Terminal className="h-3.5 w-3.5 text-[#ed670f]" />
-              <span>MEIPORUL (மெய்பொருள்) // SIGNAL VERIFICATION ENGINE v1.0.0</span>
+              <span className="font-brand font-semibold text-[#f7f6f3] tracking-[-0.025em] uppercase">MEIPORUL</span>
+              <span className="font-tamil font-semibold text-[#ed670f]">(மெய்பொருள்)</span>
+              <span className="text-[#9f9b92] font-mono">// SIGNAL VERIFICATION ENGINE v1.0.0</span>
             </div>
             <div className="flex items-center gap-4">
               <button

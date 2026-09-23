@@ -11,7 +11,7 @@ export const AboutSection: React.FC = () => {
               <Sparkles className="h-3.5 w-3.5 text-[#ed670f]" />
               <span>PROJECT GENESIS // ANCIENT ETHICS & MODERN AI</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-bold text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-brand font-medium text-white tracking-[-0.02em]">
               About Meiporul
             </h2>
           </div>
@@ -28,10 +28,11 @@ export const AboutSection: React.FC = () => {
               <Sparkles className="h-4 w-4" />
               <span>THE PHILOSOPHICAL SEED</span>
             </div>
-            <h3 className="font-display text-base text-white">
-              மெய்பொருள் (Meiporul)
+            <h3 className="text-base text-white flex items-center gap-2 flex-wrap font-medium">
+              <span className="font-tamil font-semibold text-[17px] text-[#ed670f]">மெய்பொருள்</span>
+              <span className="font-brand font-semibold tracking-[-0.025em] text-[#f7f6f3]">(MEIPORUL)</span>
             </h3>
-            <p className="text-[14px] font-body text-[#cecdc9] leading-relaxed">
+            <p className="text-[17px] leading-[27px] font-body text-[#E8E4DD] tracking-[-0.1px]">
               In Tamil, <em>Meiporul</em> signifies the core truth or genuine essence.
               Over 2,000 years ago, Thiruvalluvar wrote in Kural 423: regardless of who utters
               words, discerning the verifiable truth therein is the true mark of wisdom.
@@ -44,10 +45,10 @@ export const AboutSection: React.FC = () => {
               <Shield className="h-4 w-4" />
               <span>THE AI HALLUCINATION CRISIS</span>
             </div>
-            <h3 className="font-display text-base text-white">
+            <h3 className="font-display font-medium text-base text-white">
               Fluency Without Evidence
             </h3>
-            <p className="text-[14px] font-body text-[#cecdc9] leading-relaxed">
+            <p className="text-[17px] leading-[27px] font-body text-[#E8E4DD] tracking-[-0.1px]">
               Modern LLMs generate fluent, persuasive answers that routinely fabricate citations,
               dates, and facts. Meiporul was built as an autonomous verification safeguard that
               other AI models call before human delivery.
@@ -60,10 +61,10 @@ export const AboutSection: React.FC = () => {
               <Award className="h-4 w-4" />
               <span>AUTONOMOUS SAFEGUARD</span>
             </div>
-            <h3 className="font-display text-base text-white">
+            <h3 className="font-display font-medium text-base text-white">
               Decompose, Verify, Rewrite
             </h3>
-            <p className="text-[14px] font-body text-[#cecdc9] leading-relaxed">
+            <p className="text-[17px] leading-[27px] font-body text-[#E8E4DD] tracking-[-0.1px]">
               By combining FActScore-style atomic decomposition, dual-signal entailment, and
               evidence-grounded rewrites, Meiporul turns unvetted AI generation into audited,
               truth-calibrated knowledge.
